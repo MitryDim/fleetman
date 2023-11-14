@@ -19,7 +19,7 @@ spec:
   type: {{ $value.type | default $.Values.global.service.type }}
   ports:
    {{- range $port := $value.ports }}
-   {{ $firstValuePort := splitList ":" $port| first | int }}
+   {{- $firstValuePort := splitList ":" $port| first | int }}
     - port: {{ $firstValuePort | default $port | int }}
       targetPort: {{ splitList ":" $port| last | int | default $port | int }}
       name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}

@@ -35,6 +35,8 @@ deployments:
       volumeMounts:
         - path: /data/db
           emptyDir: {}
+          persistentVolumeClaim: true
+
   queue:
     containers:
       image:
@@ -70,12 +72,13 @@ deployments:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-webapp-angular
-        tag: "release2"
+        tag: "release0-5"
       spring: prod
       ports:
         - 80
         - 30080
 
+#Values for service
 services:
   mongodb:
     ports:
@@ -96,6 +99,16 @@ services:
     type: NodePort
     ports:
       - "8080"
+
+#Value for persistentVolumes
+persistentVolumesClaim:
+  mongodb-pv-claim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
 
 # Default values for vehiculefleet.
 # This is a YAML-formatted file.

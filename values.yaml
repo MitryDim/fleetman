@@ -35,6 +35,8 @@ deployments:
       volumeMounts:
         - path: /data/db
           emptyDir: {}
+          persistentVolumeClaim: true
+
   queue:
     containers:
       image:
@@ -76,6 +78,7 @@ deployments:
         - 80
         - 30080
 
+#Values for service
 services:
   mongodb:
     ports:
@@ -96,6 +99,16 @@ services:
     type: NodePort
     ports:
       - "8080"
+
+#Value for persistentVolumes
+persistentVolumesClaim:
+  mongo-pv-claim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
 
 # Default values for vehiculefleet.
 # This is a YAML-formatted file.

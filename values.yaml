@@ -1,22 +1,27 @@
-#Global Values 
+#Global Values
 
-global: 
+global:
   replicaCount: 1
   useSpring: kubernetes
   image:
     tag: "latest"
     pullPolicy: IfNotPresent
-  ports :
-  - 80
+  ports:
+    - 80
   service:
-    type : ClusterIP
-    protocol : TCP
+    type: ClusterIP
+    protocol: TCP
 
 spring:
   kubernetes:
     name: SPRING_PROFILES_ACTIVE
+    value: kubernetes
+  local:
+    name: SPRING_PROFILES_ACTIVE
     value: local-microservice
-
+  prod:
+    name: SPRING_PROFILES_ACTIVE
+    value: production-microservice
 
 #Value for deployment configuration
 deployments:
@@ -38,26 +43,26 @@ deployments:
       ports:
         - 8161
         - 61616
-  simulator: 
+  simulator:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-position-simulator
-        tag : "release2"
-      spring: kubernetes
+        tag: "release2"
+      spring: prod
   tracker:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-position-tracker
         tag: "release3"
-      spring: kubernetes
-      ports: 
+      spring: prod
+      ports:
         - 8080
   gateway:
-    containers: 
+    containers:
       image:
         repository: richardchesterwood/k8s-fleetman-api-gateway
         tag: "release2"
-      spring: kubernetes
+      spring: prod
       ports:
         - 8080
         - 30020
@@ -66,16 +71,16 @@ deployments:
       image:
         repository: richardchesterwood/k8s-fleetman-webapp-angular
         tag: "release2"
+      spring: prod
       ports:
         - 80
         - 30080
-
 
 services:
   mongodb:
     ports:
       - "27017:27017"
-  queue: 
+  queue:
     ports:
       - "8161:61616"
   simulator:
@@ -85,14 +90,12 @@ services:
     ports:
       - "8080"
   gateway:
-    ports :
+    ports:
       - "8080:30020"
   webapp:
     type: NodePort
-    ports: 
+    ports:
       - "8080"
-
-
 
 # Default values for vehiculefleet.
 # This is a YAML-formatted file.
@@ -122,10 +125,12 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -140,7 +145,8 @@ service:
 ingress:
   enabled: false
   className: ""
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -153,7 +159,8 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following

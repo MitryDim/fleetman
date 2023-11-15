@@ -29,7 +29,7 @@ deployments:
     containers:
       image:
         repository: mongo
-        tag: "3.6.5-jessie"
+        tag: "3.6.23"
       volumeMounts:
         - path: /data/db
           emptyDir: {}
@@ -38,33 +38,33 @@ deployments:
   queue:
     containers:
       image:
-        repository: richardchesterwood/k8s-fleetman-queue
-        tag: "release2"
+        repository: supinfo4kube/queue
+        tag: "1.0.1"
   position-simulator:
     containers:
       image:
-        repository: richardchesterwood/k8s-fleetman-position-simulator
-        tag: "release2"
+        repository: supinfo4kube/position-simulator
+        tag: "1.0.1"
       spring: prod
   position-tracker:
     containers:
       image:
-        repository: richardchesterwood/k8s-fleetman-position-tracker
-        tag: "release3"
+        repository: supinfo4kube/position-tracker
+        tag: "1.0.1"
       spring: prod
 
   api-gateway:
     containers:
       image:
-        repository: richardchesterwood/k8s-fleetman-api-gateway
-        tag: "release2"
+        repository: supinfo4kube/api-gateway
+        tag: "1.0.1"
       spring: prod
 
   webapp:
     containers:
       image:
-        repository: richardchesterwood/k8s-fleetman-webapp-angular
-        tag: "release2"
+        repository: supinfo4kube/web-app
+        tag: "1.0.0"
       spring: prod
 
 #Values for service

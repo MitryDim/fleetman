@@ -30,8 +30,6 @@ deployments:
       image:
         repository: mongo
         tag: "3.6.5-jessie"
-      ports:
-        - 27017
       volumeMounts:
         - path: /data/db
           emptyDir: {}
@@ -42,63 +40,53 @@ deployments:
       image:
         repository: richardchesterwood/k8s-fleetman-queue
         tag: "release2"
-      ports:
-        - 8161
-        - 61616
-  simulator:
+  position-simulator:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-position-simulator
         tag: "release2"
       spring: prod
-  tracker:
+  position-tracker:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-position-tracker
         tag: "release3"
       spring: prod
-      ports:
-        - 8080
-  gateway:
+
+  api-gateway:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-api-gateway
         tag: "release2"
       spring: prod
-      ports:
-        - 8080
-        - 30020
+
   webapp:
     containers:
       image:
         repository: richardchesterwood/k8s-fleetman-webapp-angular
-        tag: "release0-5"
+        tag: "release2"
       spring: prod
-      ports:
-        - 80
-        - 30080
 
 #Values for service
 services:
   mongodb:
     ports:
-      - "27017:27017"
+      - "27017"
   queue:
+    type: NodePort
     ports:
-      - "8161:61616"
-  simulator:
+      - "8161:30010"
+      - "61616"
+  position-tracker:
     ports:
       - "8080"
-  tracker:
+  api-gateway:
     ports:
       - "8080"
-  gateway:
-    ports:
-      - "8080:30020"
   webapp:
     type: NodePort
     ports:
-      - "8080"
+      - "80:30080"
 
 #Value for persistentVolumes
 persistentVolumesClaim:

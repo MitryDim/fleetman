@@ -9,7 +9,7 @@ metadata:
   {{- with $value.labels }}
     {{- toYaml . | nindent 4}}
   {{ else }}
-    app: {{ $key }}  
+    app: {{ $key }}
   {{- end }}
 spec:
   replicas: {{ $value.replicaCount | default $.Values.global.replicaCount }}
@@ -18,15 +18,15 @@ spec:
       {{- with $value.labels }}
         {{- toYaml . | nindent 6}}
       {{ else }}
-        app: {{ $key }}  
+        app: {{ $key }}
       {{- end }}
   template:
     metadata:
-      labels: 
+      labels:
       {{- with $value.labels }}
         {{- toYaml . | nindent 8}}
       {{ else }}
-        app: {{ $key }}  
+        app: {{ $key }}
       {{- end }}
     spec:
       containers:

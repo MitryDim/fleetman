@@ -1,6 +1,6 @@
 apiVersion: v2
 name: vehiculefleet
-description: A Helm chart for Kubernetes
+description: A Helm chart for fleetMan
 
 # A chart can be either an 'application' or a 'library' chart.
 #

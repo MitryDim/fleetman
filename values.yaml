@@ -35,6 +35,13 @@ deployments:
       image:
         repository: mongo
         tag: "3.6.23"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
       volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
@@ -81,6 +88,13 @@ deployments:
       image:
         repository: supinfo4kube/web-app
         tag: "1.0.0"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "750m"
       spring: prod
       livenessProbe:
         port: 80
@@ -91,9 +105,9 @@ services:
     ports:
       - "27017"
   queue:
-    type: NodePort 
-    ports: # if you have two ports target and port the first value is localPort and other is port to 
-      - "8161:30010" #30010 is NodePort 
+    type: NodePort
+    ports: # if you have two ports target and port the first value is localPort and other is port to
+      - "8161:30010" #30010 is NodePort
       - "61616"
   position-tracker:
     ports:
@@ -132,7 +146,6 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-
 resources:
   {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -152,5 +165,3 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-

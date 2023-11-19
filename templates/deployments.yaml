@@ -51,6 +51,19 @@ spec:
               name: {{ $key }}-{{ . }}
             {{- end }}
           {{- end }}
+          {{- with $value.containers.livenessProbe }}
+          livenessProbe:
+          {{- $livenessProbeType := .type  | default $.Values.global.livenessProbe.type -}}
+          {{- if eq $livenessProbeType "httpGet" }}
+          httpGet:
+          {{- else if eq $livenessProbeType "tcpSocket"}}
+          tcpSocket:
+          {{- end }}
+            path: {{ .path | default $.Values.global.livenessProbe.path}}
+            port: {{ .port }}
+          initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+          {{- end }}
     {{- if $value.containers.volumeMounts }}
           volumeMounts:
             {{- range $index, $volume := $value.containers.volumeMounts }}

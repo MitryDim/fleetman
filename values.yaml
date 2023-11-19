@@ -10,6 +10,11 @@ global:
   service:
     type: ClusterIP
     protocol: TCP
+  livenessProbe:
+    type: "httpGet"
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
 
 #Value ENV for spring profile
 spring:
@@ -40,6 +45,9 @@ deployments:
       volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
+      livenessProbe:
+        type: "tcpSocket"
+        port: 27017
 
   queue:
     containers:
@@ -53,6 +61,8 @@ deployments:
         limits:
           memory: "512Mi"
           cpu: "500m"
+        livenessProbe:
+        port: 8161
 
   position-simulator:
     containers:
@@ -67,6 +77,8 @@ deployments:
           memory: "512Mi"
           cpu: "500m"
       spring: prod
+      livenessProbe:
+        port: 80
 
   position-tracker:
     containers:
@@ -81,6 +93,8 @@ deployments:
           memory: "1Gi"
           cpu: "1000m"
       spring: prod
+      livenessProbe:
+        port: 8080
 
   api-gateway:
     containers:
@@ -95,6 +109,8 @@ deployments:
           memory: "768Mi"
           cpu: "750m"
       spring: prod
+      livenessProbe:
+        port: 8080
 
   webapp:
     containers:
@@ -109,6 +125,8 @@ deployments:
           memory: "512Mi"
           cpu: "500m"
       spring: prod
+      livenessProbe:
+        port: 80
 
 #Values for service
 services:

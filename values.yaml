@@ -61,6 +61,13 @@ deployments:
       image:
         repository: supinfo4kube/queue
         tag: "1.0.1"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
         livenessProbe:
         port: 8161
 
@@ -69,6 +76,13 @@ deployments:
       image:
         repository: supinfo4kube/position-simulator
         tag: "1.0.1"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
       spring: prod
 
   position-tracker:
@@ -76,6 +90,13 @@ deployments:
       image:
         repository: supinfo4kube/position-tracker
         tag: "1.0.1"
+      resources:
+        requests:
+          memory: 512Mi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "1000m"
       spring: prod
 
   api-gateway:
@@ -83,6 +104,13 @@ deployments:
       image:
         repository: supinfo4kube/api-gateway
         tag: "1.0.1"
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "768Mi"
+          cpu: "750m"
       spring: prod
 
   webapp:
@@ -96,7 +124,7 @@ deployments:
           cpu: "250m"
         limits:
           memory: "512Mi"
-          cpu: "750m"
+          cpu: "500m"
       spring: prod
       probe:
         port: 80

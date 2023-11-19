@@ -12,7 +12,12 @@ global:
     protocol: TCP
   livenessProbe:
     type: "httpGet"
-    path: /health
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    type: "httpGet"
+    path: /
     initialDelaySeconds: 30
     periodSeconds: 10
 
@@ -45,9 +50,11 @@ deployments:
       volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
-      livenessProbe:
+      probe:
         type: "tcpSocket"
         port: 27017
+      readinessProbe: true
+      livenessProbe: true
 
   queue:
     containers:
@@ -56,14 +63,13 @@ deployments:
         tag: "1.0.1"
         livenessProbe:
         port: 8161
+
   position-simulator:
     containers:
       image:
         repository: supinfo4kube/position-simulator
         tag: "1.0.1"
       spring: prod
-      livenessProbe:
-        port: 80
 
   position-tracker:
     containers:
@@ -71,8 +77,6 @@ deployments:
         repository: supinfo4kube/position-tracker
         tag: "1.0.1"
       spring: prod
-      livenessProbe:
-        port: 8080
 
   api-gateway:
     containers:
@@ -80,8 +84,6 @@ deployments:
         repository: supinfo4kube/api-gateway
         tag: "1.0.1"
       spring: prod
-      livenessProbe:
-        port: 8080
 
   webapp:
     containers:
@@ -96,8 +98,9 @@ deployments:
           memory: "512Mi"
           cpu: "750m"
       spring: prod
-      livenessProbe:
+      probe:
         port: 80
+      livenessProbe: true
 
 #Values for service
 services:

@@ -51,18 +51,39 @@ spec:
               name: {{ $key }}-{{ . }}
             {{- end }}
           {{- end }}
-          {{- with $value.containers.livenessProbe }}
+          {{- if $value.containers.livenessProbe }}
+          {{- with $value.containers.probe }}
           livenessProbe:
           {{- $livenessProbeType := .type  | default $.Values.global.livenessProbe.type -}}
           {{- if eq $livenessProbeType "httpGet" }}
-          httpGet:
+            httpGet:
           {{- else if eq $livenessProbeType "tcpSocket"}}
-          tcpSocket:
+            tcpSocket:
           {{- end }}
-            path: {{ .path | default $.Values.global.livenessProbe.path}}
-            port: {{ .port }}
-          initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+          {{- if ne $livenessProbeType "tcpSocket" }}
+              path: {{ .path | default $.Values.global.readinessProbe.path}}
+          {{- end }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- end }}
+          {{- if $value.containers.readinessProbe }}
+          {{- with $value.containers.probe }}
+          readinessProbe:
+          {{- $readinessProbeType := .type  | default $.Values.global.readinessProbe.type -}}
+          {{- if eq $readinessProbeType "httpGet" }}
+            httpGet:
+          {{- else if eq $readinessProbeType "tcpSocket"}}
+            tcpSocket:
+          {{- end }}
+          {{- if ne $readinessProbeType "tcpSocket" }}
+              path: {{ .path | default $.Values.global.readinessProbe.path}}
+          {{- end }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
+          {{- end }}
           {{- end }}
     {{- if $value.containers.volumeMounts }}
           volumeMounts:

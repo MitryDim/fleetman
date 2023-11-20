@@ -1,7 +1,8 @@
 #Global Values
 global:
+  namespace: default #namespace !! don't touch because have one bug in application ..
   replicaCount: 1
-  useSpring: kubernetes
+  useSpring: local
   image:
     tag: "latest"
     pullPolicy: IfNotPresent
@@ -23,9 +24,6 @@ global:
 
 #Value ENV for spring profile
 spring:
-  kubernetes:
-    name: SPRING_PROFILES_ACTIVE
-    value: kubernetes
   local:
     name: SPRING_PROFILES_ACTIVE
     value: local-microservice
@@ -55,7 +53,6 @@ deployments:
         port: 27017
       readinessProbe: true
       livenessProbe: true
-
   queue:
     containers:
       image:
@@ -68,8 +65,9 @@ deployments:
         limits:
           memory: "512Mi"
           cpu: "500m"
-        livenessProbe:
-        port: 8161
+        probe:
+          port: 8161
+        livenessProbe: true
 
   position-simulator:
     containers:

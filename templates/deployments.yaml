@@ -4,6 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ $value.namespace | default $.Values.global.namespace }}
   name: {{ $key }}
   labels:
   {{- with $value.labels }}

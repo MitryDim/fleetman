@@ -1,7 +1,6 @@
-# Fleetman
-
-
-### Objectives
+# Fleetman 🚚
+---
+## Objectives
 
 Your role is to deploy this distributed application on a Kubernetes cluster. To do this, you will use the information in the Docker Compose file and go through the following steps:
 
@@ -11,6 +10,7 @@ Your role is to deploy this distributed application on a Kubernetes cluster. To 
 
     3. Use a volume for the database.
 
+---
 
 ### Elements à notre disposition :
 
@@ -21,60 +21,60 @@ Your role is to deploy this distributed application on a Kubernetes cluster. To 
 **fleetman-api-gateway** : a Gateway API serving as an entry point for the web application.
 **fleetman-web-app** : the web application presented above.
 
+---
 
+## Installation and Launching Fleetman with Helm
 
-
-### Installation and Launching Fleetman with Helm
 ### Prerequisites
 
-** Ensure that you have the following tools installed on your machine:**
+Helm is the package manager for Kubernetes.
+Ensure that you have the following tools installed on your machine :
 https://helm.sh/docs/intro/install/
 
-Helm: ` Install Helm` 
-Clone the Project
-Clone the Fleetman project from your Git repository:
-git clone https://github.com/MitryDim/fleetman.git
 
-cd fleetman
+### Clone the Project
+
+⚠️**NE PAS OUBLIER DE METTRE LE GIT EN PUBLIC**⚠️
+
+Clone the Fleetman project from your Git repository:
+git clone
+
+https://github.com/MitryDim/fleetman.git
+
+Go on the helm directory : `cd fleetman`
+
+
 
 ### Configuration
+
 ` values.yaml` File
 Open the values.yaml file in the fleetman/charts/fleetman/ directory.
 Modify the values according to your needs, especially those under deployments for each application.
 Ensure Docker images and probe configurations (liveness and readiness) are correct.
 
 ### Installation with Helm
+
 In the fleetman/charts/fleetman/ directory, run the Helm command to install the Fleetman project:
 
-
-`helm install your-release-name .` 
+`helm install your-release-name .`
 Replace your-release-name with the desired name for your deployment.
 
 ### Verification of Installation
+
 Check that the pods are running:
-`kubectl get pods` 
+`kubectl get pods`
 
 ### Verify that the services are deployed:
-`kubectl get services` 
 
-###  Accessing Services
+`kubectl get services`
+
+### Accessing Services
+
 You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1:30080.
 
 **Uninstallation with Helm**
 If needed, you can uninstall Fleetman using the Helm command:
 `helm uninstall your-release-name`
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Helm Configuration for Fleetman
 
@@ -82,19 +82,22 @@ This project uses Helm to manage the deployment of various applications within K
 
 ## Project Structure
 
-fleetman/
-|-- charts/
-|   |-- fleetman/
-|       |-- templates/
-|           |-- deployments.yaml
-|           |-- service.yaml
-|           |-- persistentvolumes.yaml
-|-- values.yaml
-|-- README.md
+    fleetman/
+    |-- charts/
+    | |-- fleetman/
+    | |-- templates/
+    | |-- deployments.yaml
+    | |-- service.yaml
+    | |-- persistentvolumes.yaml
+    |-- values.yaml
+    |-- README.md
+
+
+
 Helm Configuration
 values.yaml
 
-The values.yaml file contains default values for Fleetman deployments. 
+The values.yaml file contains default values for Fleetman deployments.
 
 Global Configuration
 replicaCount: Default number of replicas for deployments.

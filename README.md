@@ -1,25 +1,25 @@
 # Fleetman
 
 
-### Objectifs
+### Objectives
 
-Votre rôle est de déployer cette application distribuée sur un cluster Kubernetes. Pour ce faire, vous vous utiliserez les informations présentes dans le fichier Docker Compose et passerez par les étapes suivantes :
+Your role is to deploy this distributed application on a Kubernetes cluster. To do this, you will use the information in the Docker Compose file and go through the following steps:
 
-    1. Créer un déploiement pour chaque conteneur.
+    1. Create a deployment for each container.
 
-    2. Créer un service pour chaque déploiement. Vous veillerez à utiliser un service interne ou externe selon ce qui est le plus approprié.
+    2. Create a service for each deployment. Be sure to use an internal or external service, whichever is more appropriate.
 
-    3. Utiliser un volume pour la base de données.
+    3. Use a volume for the database.
 
 
 ### Elements à notre disposition :
 
-**fleetman-position-simulator** : une application Spring Boot émettant en continu des positions fictives de véhicules.
-**fleetman-queue** : une queue Apache ActiveMQ qui reçoit puis transmet ces positions.
-**fleetman-position-tracker** : une application Spring Boot qui consomme ces positions reçues pour les stocker dans une base de données MongoDB. Elles sont ensuite disponibles via une API RESTful.
-**fleetman-mongo** : instance de la base de données MongoDB.
-**fleetman-api-gateway** : une API Gateway servant de point d'entrée pour l'application web
-**fleetman-web-app** : l'application web présentée précédemment.
+**fleetman-position-simulator** : a Spring Boot application that continuously transmits fictitious vehicle positions.
+**fleetman-queue** : an Apache ActiveMQ queue that receives and transmits these positions.
+**fleetman-position-tracker** : a Spring Boot application that consumes these received positions and stores them in a MongoDB database. They are then made available via a RESTful API.
+**fleetman-mongo** : instance of the MongoDB database.
+**fleetman-api-gateway** : a Gateway API serving as an entry point for the web application.
+**fleetman-web-app** : the web application presented above.
 
 
 # Helm Configuration for Fleetman

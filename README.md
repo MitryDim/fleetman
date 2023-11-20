@@ -42,7 +42,8 @@ cd fleetman
 Open the values.yaml file in the fleetman/charts/fleetman/ directory.
 Modify the values according to your needs, especially those under deployments for each application.
 Ensure Docker images and probe configurations (liveness and readiness) are correct.
-Installation with Helm
+
+### Installation with Helm
 In the fleetman/charts/fleetman/ directory, run the Helm command to install the Fleetman project:
 
 

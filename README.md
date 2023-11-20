@@ -44,20 +44,19 @@ https://github.com/MitryDim/fleetman.git
 Go on the helm directory : `cd fleetman`
 
 
-
 ### Configuration
 
-` values.yaml` File
-Open the values.yaml file in the fleetman/charts/fleetman/ directory.
+Open the `values.yaml` file in the **fleetman** directory.
+The values.yaml file contains default values for Fleetman deployments.
 Modify the values according to your needs, especially those under deployments for each application.
 Ensure Docker images and probe configurations (liveness and readiness) are correct.
 
 ### Installation with Helm
 
-In the fleetman/charts/fleetman/ directory, run the Helm command to install the Fleetman project:
+In the **fleetman** directory, run the Helm command to install the Fleetman project:
 
 `helm install your-release-name .`
-Replace your-release-name with the desired name for your deployment.
+Replace "your-release-name" with the desired name for your deployment.
 
 ### Verification of Installation
 
@@ -72,32 +71,33 @@ Check that the pods are running:
 
 You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1:30080.
 
-**Uninstallation with Helm**
+### Uninstallation with Helm
 If needed, you can uninstall Fleetman using the Helm command:
 `helm uninstall your-release-name`
-
-# Helm Configuration for Fleetman
-
-This project uses Helm to manage the deployment of various applications within Kubernetes. The `values.yaml` file contains default configuration values for these deployments. You can customize these values according to your needs.
 
 ## Project Structure
 
     fleetman/
-    |-- charts/
-    | |-- fleetman/
     | |-- templates/
-    | |-- deployments.yaml
-    | |-- service.yaml
-    | |-- persistentvolumes.yaml
+    |   |-- deployments.yaml
+    |   |-- service.yaml
+    |   |-- persistentvolumes.yaml
+    |-- Chart.yaml
     |-- values.yaml
     |-- README.md
 
+## Charts Templates
+
+**deployments.yaml**
+The deployments.yaml file defines Kubernetes deployments generated from the values defined in values.yaml.
+
+**service.yaml**
+The service.yaml file defines Kubernetes services generated from the values defined in values.yaml.
+
+**persistentvolumes.yaml**
+The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
 
-Helm Configuration
-values.yaml
-
-The values.yaml file contains default values for Fleetman deployments.
 
 Global Configuration
 replicaCount: Default number of replicas for deployments.
@@ -115,21 +115,3 @@ Spring profiles can be defined with specific values.
 
 Deployment Configurations
 Specific deployments are configured with their own parameters.
-
-mongodb
-queue
-position-simulator
-position-tracker
-api-gateway
-webapp
-deployments.yaml
-The deployments.yaml file defines Kubernetes deployments generated from the values defined in values.yaml.
-
-service.yaml
-The service.yaml file defines Kubernetes services generated from the values defined in values.yaml.
-
-persistentvolumes.yaml
-The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
-
-Customization
-You can customize the configuration by modifying values in the values.yaml file. Make sure to follow the YAML structure and syntax.

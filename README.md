@@ -82,6 +82,7 @@ If needed, you can uninstall Fleetman using the Helm command:
     |   |-- deployments.yaml
     |   |-- service.yaml
     |   |-- persistentvolumes.yaml
+    |-- .helmignore
     |-- Chart.yaml
     |-- values.yaml
     |-- README.md

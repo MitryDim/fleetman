@@ -100,20 +100,37 @@ The service.yaml file defines Kubernetes services generated from the values defi
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
 
+#Value ENV for spring profile
+spring:
+  local:
+    name: SPRING_PROFILES_ACTIVE
+    value: local-microservice
+  prod:
+    name: SPRING_PROFILES_ACTIVE
+    value: production-microservice
 
 Global Configuration
-replicaCount: Default number of replicas for deployments.
-useSpring: Use of Spring for Kubernetes.
-image: Default Docker image configuration.
-tag: Image tag.
-pullPolicy: Image pull policy.
-ports: Default exposed ports.
-service: Default Kubernetes service configuration.
-type: Service type.
-protocol: Service protocol.
-livenessProbe and readinessProbe: Default configurations for liveness and readiness probes.
-Spring Profiles
-Spring profiles can be defined with specific values.
+  namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
+  replicaCount: 1 Default number of replicas for deployments.
+  useSpring: local  depend of  value ENV for spring profile can be defined with specific values
+  image: Default configuration image.
+    tag: "latest" Default Image tag
+    pullPolicy: IfNotPresent Default Image pull policy
+  ports: 
+    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
+  service:
+    type: ClusterIP Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer  https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    protocol: TCP Default protocol is TCP : https://kubernetes.io/docs/reference/networking/service-protocols/
+  livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+    type: "httpGet"
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    type: "httpGet"
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
 
 Deployment Configurations
 Specific deployments are configured with their own parameters.

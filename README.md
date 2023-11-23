@@ -133,14 +133,14 @@ global:
 		protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/) 
 	livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 		type: "httpGet"
-	    path: /
-	    initialDelaySeconds: 30
-	    periodSeconds: 10
+		path: /
+		initialDelaySeconds: 30
+		periodSeconds: 10
 	readinessProbe:
-	    type: "httpGet"
-	    path: /
-	    initialDelaySeconds: 30
-	    periodSeconds: 10
+		type: "httpGet"
+		path: /
+		initialDelaySeconds: 30
+		periodSeconds: 10
 ```
 ```Note
 [Service type](https://kubernetes.io/docs/reference/networking/service-protocols/) : https://kubernetes.io/docs/reference/networking/service-protocols/

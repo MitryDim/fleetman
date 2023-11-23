@@ -116,7 +116,6 @@ spring:
   prod:
     name: SPRING_PROFILES_ACTIVE
     value: production-microservice
-	    
 
 #Global Values
 global:

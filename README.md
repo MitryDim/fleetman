@@ -15,7 +15,6 @@ Your role is to deploy this distributed application on a Kubernetes cluster. To 
 
     3. Use a volume for the database.
 ---
-![signature](https://github.com/MitryDim/fleetman/assets/44736220/f2769116-c8a4-47da-834e-d2ecaa452695)
 
 ### Elements à notre disposition :
 

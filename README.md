@@ -141,6 +141,11 @@ global:
 		path: /
 		initialDelaySeconds: 30
 		periodSeconds: 10
+  readinessProbe:
+    type: "httpGet"
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
 ```
 ```Note
 [Service type](https://kubernetes.io/docs/reference/networking/service-protocols/) : https://kubernetes.io/docs/reference/networking/service-protocols/

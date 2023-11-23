@@ -110,42 +110,37 @@ The persistentvolumes.yaml file defines Kubernetes persistent volume claims gene
 ```yaml
 #The value of spring is defined in application you have to choose local or prod.
 spring:
-	local:
-		name: SPRING_PROFILES_ACTIVE
-	    value: local-microservice
-	 prod:
-	    name: SPRING_PROFILES_ACTIVE
-	    value: production-microservice
+  local:
+    name: SPRING_PROFILES_ACTIVE
+    value: local-microservice
+  prod:
+    name: SPRING_PROFILES_ACTIVE
+    value: production-microservice
 	    
 
 #Global Values
 global:
-	namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
-	replicaCount: 1 Default number of replicas for deployments.
-	useSpring: local  depend of  value ENV for spring profile can be defined with specific values
-	image: Default configuration image.
-		tag: "latest" Default Image tag
-		pullPolicy: IfNotPresent Default Image pull policy
-	ports: 
-		- 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
-	service:
-		type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-		protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/) 
-	livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-		type: "httpGet"
-		path: /
-		initialDelaySeconds: 30
-		periodSeconds: 10
-	readinessProbe:
-		type: "httpGet"
-		path: /
-		initialDelaySeconds: 30
-		periodSeconds: 10
-  readinessProbe:
-    type: "httpGet"
-    path: /
-    initialDelaySeconds: 30
-    periodSeconds: 10
+  namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
+  replicaCount: 1 Default number of replicas for deployments.
+  useSpring: local  depend of  value ENV for spring profile can be defined with specific values
+  image: Default configuration image.
+    tag: "latest" Default Image tag
+    pullPolicy: IfNotPresent Default Image pull policy
+  ports: 
+    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
+  service:
+    type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/) 
+    livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+      type: "httpGet"
+      path: /
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      type: "httpGet"
+      path: /
+      initialDelaySeconds: 30
+      periodSeconds: 10
 ```
 ```Note
 [Service type](https://kubernetes.io/docs/reference/networking/service-protocols/) : https://kubernetes.io/docs/reference/networking/service-protocols/

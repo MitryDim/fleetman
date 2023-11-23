@@ -151,12 +151,12 @@ global:
 ***Configuration of deployments values***
 The deployments value is the value use for the differents deployment.
  
- - mongodb
- - queue
- - position-simulator
- - position-tracker
- - api-gateway
- - webapp
+ *  mongodb
+ *  queue
+*  position-simulator
+* position-tracker
+* api-gateway
+* webapp
  
 You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 ```YAML

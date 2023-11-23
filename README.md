@@ -4,25 +4,26 @@
 ---
 ![Result](https://github.com/MitryDim/fleetman/assets/80764455/10f1214c-532e-4448-9ecb-f5ffb1f14cc2)
 
-## Objectives
+## Summary
 
-Your role is to deploy this distributed application on a Kubernetes cluster. To do this, you will use the information in the Docker Compose file and go through the following steps:
+* [Installation and Launching Fleetman with Helm](https://github.com/MitryDim/fleetman/tree/main#installation-and-launching-fleetman-with-helm)
+	* [Prerequisites](https://github.com/MitryDim/fleetman/tree/main#prerequisites)
 
-    1. Create a deployment for each container.
-
-    2. Create a service for each deployment. Be sure to use an internal or external service, whichever is more appropriate.
-
-    3. Use a volume for the database.
 ---
+## Description du projet
+The project is a web application that allows real-time tracking of a fleet of vehicles performing deliveries.
+
+## Objectives
+The goal of this project is to deploy this application with [Kubernetes](https://kubernetes.io/) as well as with the package manager [Helm](https://helm.sh/fr/), which will allow us to configure and deploy our application efficiently.
 
 ### Elements à notre disposition :
-
-**fleetman-position-simulator** : a Spring Boot application that continuously transmits fictitious vehicle positions.
-**fleetman-queue** : an Apache ActiveMQ queue that receives and transmits these positions.
-**fleetman-position-tracker** : a Spring Boot application that consumes these received positions and stores them in a MongoDB database. They are then made available via a RESTful API.
-**fleetman-mongo** : instance of the MongoDB database.
-**fleetman-api-gateway** : a Gateway API serving as an entry point for the web application.
-**fleetman-web-app** : the web application presented above.
+Pour ce projet, nous utiliserons les images Dockers de supinfo4kube pour l'application et mongo pour la base de données.
+**[fleetman-position-simulator](https://hub.docker.com/r/supinfo4kube/position-simulator)** : a Spring Boot application that continuously transmits fictitious vehicle positions.
+**[fleetman-queue](https://hub.docker.com/r/supinfo4kube/queue)** : an Apache ActiveMQ queue that receives and transmits these positions.
+**[fleetman-position-tracker](https://hub.docker.com/r/supinfo4kube/position-tracker)** : a Spring Boot application that consumes these received positions and stores them in a MongoDB database. They are then made available via a RESTful API.
+**[fleetman-mongo](https://hub.docker.com/_/mongo)** : instance of the MongoDB database.
+**[fleetman-api-gateway](https://hub.docker.com/r/supinfo4kube/api-gateway)** : a Gateway API serving as an entry point for the web application.
+**[fleetman-web-app](https://hub.docker.com/r/supinfo4kube/web-app/tags)** : the web application presented above.
 
 ---
 
@@ -103,37 +104,47 @@ The service.yaml file defines Kubernetes services generated from the values defi
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
 
-#Value ENV for spring profile
-spring:
-  local:
-    name: SPRING_PROFILES_ACTIVE
-    value: local-microservice
-  prod:
-    name: SPRING_PROFILES_ACTIVE
-    value: production-microservice
+## Configuration value.yaml file
 
-Global Configuration
-  namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
-  replicaCount: 1 Default number of replicas for deployments.
-  useSpring: local  depend of  value ENV for spring profile can be defined with specific values
-  image: Default configuration image.
-    tag: "latest" Default Image tag
-    pullPolicy: IfNotPresent Default Image pull policy
-  ports: 
-    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
-  service:
-    type: ClusterIP Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer  https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-    protocol: TCP Default protocol is TCP : https://kubernetes.io/docs/reference/networking/service-protocols/
-  livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-    type: "httpGet"
-    path: /
-    initialDelaySeconds: 30
-    periodSeconds: 10
-  readinessProbe:
-    type: "httpGet"
-    path: /
-    initialDelaySeconds: 30
-    periodSeconds: 10
+**Value ENV for spring profile**	
+```yaml
+#The value of spring is defined in application you have to choose local or prod.
+spring:
+	local:
+		name: SPRING_PROFILES_ACTIVE
+	    value: local-microservice
+	 prod:
+	    name: SPRING_PROFILES_ACTIVE
+	    value: production-microservice
+	    
+
+#Global Values
+global:
+	namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
+	replicaCount: 1 Default number of replicas for deployments.
+	useSpring: local  depend of  value ENV for spring profile can be defined with specific values
+	image: Default configuration image.
+		tag: "latest" Default Image tag
+		pullPolicy: IfNotPresent Default Image pull policy
+	ports: 
+		- 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
+	service:
+		type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+		protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/) 
+	livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+		type: "httpGet"
+	    path: /
+	    initialDelaySeconds: 30
+	    periodSeconds: 10
+	readinessProbe:
+	    type: "httpGet"
+	    path: /
+	    initialDelaySeconds: 30
+	    periodSeconds: 10
+```
+```Note
+[Service type](https://kubernetes.io/docs/reference/networking/service-protocols/) : https://kubernetes.io/docs/reference/networking/service-protocols/
+```
 
 Deployment Configurations
 Specific deployments are configured with their own parameters.

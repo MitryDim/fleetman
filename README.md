@@ -3,7 +3,6 @@
 # Fleetman 🚚
 ---
 
-![Result]()
 
 ## Objectives
 

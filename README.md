@@ -107,9 +107,9 @@ The service.yaml file defines Kubernetes services generated from the values defi
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
 
-## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration
+## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration 
 
-**Value ENV for spring profile**
+**Value ENV for spring profile**	
 
 ***Spring values***
 The spring value is an environment value it was defined in the application you must choose local or prod.
@@ -123,7 +123,7 @@ spring:
     value: production-microservice
 ```
 ***Configuration of the global values***
-The global values is the default values for configuration the deployements and services
+The global values is the default values for configuration the deployements and services 
 ``` YAML
 global:
   namespace: default Default value for namespace /!\ don't touch for this moment because the application hav one bug if is not in default namespace.
@@ -132,18 +132,11 @@ global:
   image: Default configuration image.
     tag: "latest" Default Image tag
     pullPolicy: IfNotPresent Default Image pull policy
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
-  ports:
-    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne
+  ports: 
+    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
   service:
     type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-    protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/)
+    protocol: TCP #Default protocol is TCP Docs : https://kubernetes.io/docs/reference/networking/service-protocols/) 
     livenessProbe: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
       type: "httpGet"
       path: /
@@ -157,14 +150,14 @@ global:
 ```
 ***Configuration of deployments values***
 The deployments value is the value use for the differents deployment.
-
+ 
  *  mongodb
  *  queue
 *  position-simulator
 * position-tracker
 * api-gateway
 * webapp
-
+ 
 You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 ```YAML
 deployments:
@@ -173,7 +166,13 @@ deployments:
       image:
         repository: mongo
         tag: "3.6.23" <-- version of image docker
-      resources: true <-- Take de Global values of resources
+      resources: <-- ressource is for control the ressources use by your application
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
       volumeMounts: <-- this value is for mount a volume
         - path: /data/db
           persistentVolumeClaim: true <-- make true if you wan't use persistent volume this value is required
@@ -187,16 +186,28 @@ deployments:
       image:
         repository: supinfo4kube/queue
         tag: "1.0.1"
-      resources: true
-      probe:
-        port: 8161
-      livenessProbe: true
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+        probe:
+          port: 8161
+        livenessProbe: true
   position-simulator:
     containers:
       image:
         repository: supinfo4kube/position-simulator
         tag: "1.0.1"
-      resources: true
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
       spring: prod <-- this value is the value of spring profile describe a little above
   position-tracker:
     containers:
@@ -229,13 +240,138 @@ deployments:
       image:
         repository: supinfo4kube/web-app
         tag: "1.0.0"
-      resources: true
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
       spring: prod
       probe:
         port: 80
-      livenessProbe: true
+      livenessProbe: true  
 ```
 
 
 Deployment Configurations
 Specific deployments are configured with their own parameters.
+
+##### This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
+```YAML
+{{- range $key, $value := .Values.deployments }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ $value.namespace | default $.Values.global.namespace }} <-- value overide or in global value 
+  name: {{ $key }} <-- name the deployment
+  labels: 
+  {{- with $value.labels }}
+    {{- toYaml . | nindent 4}}
+  {{ else }}
+    app: {{ $key }}
+  {{- end }}
+spec:
+  replicas: {{ $value.replicaCount | default $.Values.global.replicaCount }}
+  selector:
+    matchLabels:
+      {{- with $value.labels }}
+        {{- toYaml . | nindent 6}}
+      {{ else }}
+        app: {{ $key }}
+      {{- end }}
+  template:
+    metadata:
+      labels:
+      {{- with $value.labels }}
+        {{- toYaml . | nindent 8}}
+      {{ else }}
+        app: {{ $key }}
+      {{- end }}
+    spec:
+      containers:
+        - name: {{ $key }}
+          imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
+          image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
+          {{- if $value.containers.resources | default $.Values.global.resources }}
+          resources:
+            request:
+              memory: {{ .request.memory}}
+              cpu: {{ .request.cpu}}
+            limits:
+              memory: {{ .limits.memory}}
+              cpu: {{ .limits.cpu}}
+          {{- end -}}
+          {{- with $value.containers.secret }}
+          envFrom :
+            - secretRef:
+                name: {{ . }}
+          {{- end -}}
+          {{- if $value.containers.spring }}
+          {{- $value := index $.Values.spring $value.containers.spring }}
+          env:
+            - name: {{ $value.name }}
+              value: {{ $value.value }}
+          {{- end }}
+          {{- if $value.containers.ports}}
+          ports:
+            {{- range $value.containers.ports | default $.Values.global.ports }}
+            - containerPort: {{ . }}
+              name: {{ $key }}-{{ . }}
+            {{- end }}
+          {{- end }}
+          {{- if $value.containers.livenessProbe }}
+          {{- with $value.containers.probe }}
+          livenessProbe:
+          {{- $livenessProbeType := .type  | default $.Values.global.livenessProbe.type -}}
+          {{- if eq $livenessProbeType "httpGet" }}
+            httpGet:
+          {{- else if eq $livenessProbeType "tcpSocket"}}
+            tcpSocket:
+          {{- end }}
+          {{- if ne $livenessProbeType "tcpSocket" }}
+              path: {{ .path | default $.Values.global.readinessProbe.path}}
+          {{- end }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- end }}
+          {{- if $value.containers.readinessProbe }}
+          {{- with $value.containers.probe }}
+          readinessProbe:
+          {{- $readinessProbeType := .type  | default $.Values.global.readinessProbe.type -}}
+          {{- if eq $readinessProbeType "httpGet" }}
+            httpGet:
+          {{- else if eq $readinessProbeType "tcpSocket"}}
+            tcpSocket:
+          {{- end }}
+          {{- if ne $readinessProbeType "tcpSocket" }}
+              path: {{ .path | default $.Values.global.readinessProbe.path}}
+          {{- end }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
+          {{- end }}
+          {{- end }}
+    {{- if $value.containers.volumeMounts }}
+          volumeMounts:
+            {{- range $index, $volume := $value.containers.volumeMounts }}
+            - mountPath: {{ $volume.path}}
+              name: {{ $key }}-{{ $index }}
+            {{- end }}
+      volumes:
+      {{- range $index, $volume := $value.containers.volumeMounts }}
+        - name: {{ $key }}-{{ $index }}
+        {{- if $volume.emptyDir}}
+          emptyDir: {{ $volume.emptyDir }}
+        {{- end }}
+        {{- if $volume.persistentVolumeClaim | default false }}
+          persistentVolumeClaim:
+            claimName: {{ $key }}-pv-claim
+        {{ end }}
+      {{ end }}
+    {{ end }}
+---
+{{- end }}
+```

@@ -119,8 +119,8 @@ Global Configuration
   image: Default configuration image.
     tag: "latest" Default Image tag
     pullPolicy: IfNotPresent Default Image pull policy
-  ports: 
-    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne 
+  ports:
+    - 80   If you wan't an port interne and is not the same you can make this : InternalPort:ExternalPort for exemple 80:36500 if type is NodePort the port aceessible in externe was 36500 and point to port 80 in interne
   service:
     type: ClusterIP Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer  https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     protocol: TCP Default protocol is TCP : https://kubernetes.io/docs/reference/networking/service-protocols/

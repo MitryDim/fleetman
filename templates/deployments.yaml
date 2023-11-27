@@ -34,6 +34,15 @@ spec:
         - name: {{ $key }}
           imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
           image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
+          {{- if $value.containers.resources | default $.Values.global.resources }}
+          resources:
+            request:
+              memory: {{ .request.memory}}
+              cpu: {{ .request.cpu}}
+            limits:
+              memory: {{ .limits.memory}}
+              cpu: {{ .limits.cpu}}
+          {{- end -}}
           {{- with $value.containers.secret }}
           envFrom :
             - secretRef:

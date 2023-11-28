@@ -45,7 +45,6 @@ deployments:
       image:
         repository: mongo
         tag: "3.6.23"
-      resources: true
       volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
@@ -59,7 +58,6 @@ deployments:
       image:
         repository: supinfo4kube/queue
         tag: "1.0.1"
-      resources: true
       probe:
         port: 8161
       livenessProbe: true
@@ -69,7 +67,6 @@ deployments:
       image:
         repository: supinfo4kube/position-simulator
         tag: "1.0.1"
-      resources: true
       spring: prod
 
   position-tracker:
@@ -105,7 +102,6 @@ deployments:
       image:
         repository: supinfo4kube/web-app
         tag: "1.0.0"
-      resources: true
       spring: prod
       probe:
         port: 80

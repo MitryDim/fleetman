@@ -109,7 +109,7 @@ The persistentvolumes.yaml file defines Kubernetes persistent volume claims gene
 
 ## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration 
 
-***Spring values***
+### Spring values
 >[!Note]
 >The spring value is an environment value it was defined in the application you must choose local or prod.
 ```yaml
@@ -121,14 +121,14 @@ spring:
     name: SPRING_PROFILES_ACTIVE
     value: production-microservice
 ```
-***Configuration of the global values***
+### Configuration of the global values
 The `global` section in the configuration file holds essential parameters that influence the overall behavior of the Fleetman application.
 
 the global configuration start with this section : 
 ```YAML
 global:
 ```
-### Deployment
+#### Deployment
 
 The default configuration for deployment is directly in global section : 
 ```YAML
@@ -163,14 +163,14 @@ Default Memory and CPU usage if their not given by the user, based on Computer C
       memory: "512Mi"
       cpu: "500m"
 ```
-###  requests
+**requests**
 To allocate/reserve resources for a container, simply configure the `requests` within the `resources` section of the container.
 
 The above example would define that this container can use a maximum of:
 -   0.25 Cores
 -   256 Megabytes of Memory (RAM)
 
-###  limits
+**limits**
 To limit the resources of a container, simply configure the  `limits`  within the  `resources`  section of the container.
 -   CPU in Core units, i.e. 3 = 3 Cores, 800m = 0.8 Core (=800  **M**illi-Core)
 -   Memory (RAM) in Gi (Gigabyte), Mi (Megabyte) or Ki (Kilobyte)
@@ -180,7 +180,7 @@ To limit the resources of a container, simply configure the  `limits`  within th
 > [!Note]
 > This global configuration provides a foundation for Fleetman's deployment, with default values that can be adjusted based on specific deployment requirements.
 
-## Service
+#### Service
 The default configuration of the service is in the global section and then in the service section: 
 ``` YAML
 global:
@@ -202,8 +202,8 @@ global:
  The protocol[^2] is set to `TCP`, and liveness and readiness [^3] probes are configured to monitor the health of the application.
  
 ```YAML
-	...
-    livenessProbe: 
+    ...
+    livenessProbe:
       type: "httpGet"
       path: /
       initialDelaySeconds: 30
@@ -212,7 +212,7 @@ global:
       type: "httpGet"
       path: /
       initialDelaySeconds: 30
-      periodSeconds: 10 
+      periodSeconds: 10
 ```
 **Liveness Probe & Readiness Probe :**
 -   **Type:** Specifies the type of probe, and in this case, it's set to "httpGet," meaning Kubernetes will perform an HTTP GET request. You can view different type in [documentation]
@@ -234,111 +234,101 @@ These settings define how Kubernetes monitors the health of a container. The liv
 [^3]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
 
-***Configuration of deployments values***
-The deployments value is the value use for the differents deployment.
- 
- *  mongodb
- *  queue
-*  position-simulator
-* position-tracker
-* api-gateway
-* webapp
- 
-You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
+### Configuration of deployments values 
+ In the `values.yaml` file the deployment start with this section : 
+
 ```YAML
 deployments:
-  mongodb: <-- name of your deployement
+```
+  The deployments value is the value use for the differents deployment these values are in section deployment the structure follow this :
+```YAML
+deployments:
+  mongodb:
     containers:
+      ...
+  queue:
+    containers:
+      ...
+  position-simulator:
+    containers:
+      ...
+  position-tracker:
+    containers:
+      ...
+  api-gateway:
+    containers:
+      ...
+  webapp:
+    containers:
+      ...
+ ```
+ 
+We will see the values ​​that you can add or modify in relation to the values ​​of the global section
+>[!Note]
+> All the value has in containers section. 
+
+**image section**
+```YAML
+...
       image:
         repository: mongo
-        tag: "3.6.23" <-- version of image docker
-      resources: <-- ressource is for control the ressources use by your application
+        tag: "3.6.23"
+```
+- the repository as a image of [docker hub](https://hub.docker.com/) 
+- tag as version of image
+
+**resources section**
+```YAML
+...
+      resources:
         requests:
           memory: "256Mi"
           cpu: "250m"
         limits:
           memory: "512Mi"
           cpu: "500m"
-      volumeMounts: <-- this value is for mount a volume
+ ```
+ **volumeMounts section**
+```YAML 
+     volumeMounts: 
         - path: /data/db
-          persistentVolumeClaim: true <-- make true if you wan't use persistent volume this value is required
+          persistentVolumeClaim: true
+```
+If you want add a volume you can add this section. 
+the value `persistentVolumeClaim : true` is for your volume to be persistent, if you don't want you just have to delete this value.
+
+If you want add multiple volume you just have to add a dash with `path : ` exemple : 
+
+```YAML 
+     volumeMounts: 
+        - path: /data/db
+          persistentVolumeClaim: true
+        - path: /data/db1
+```
+
+**Use Probe**
+If you want add readinessProbe or livenessProbe you can add these values :
+```YAML 
+...
+      readinessProbe: true
+      livenessProbe: true
+```
+For modify the value of Probe compared with global value you can proceed like this for exemple :
+```YAML
+...
       probe:
         type: "tcpSocket"
         port: 27017
-      readinessProbe: true <-- this value is if you wan't add readinessProbe
-      livenessProbe: true <-- this value is if you wan't add livenessProbe
-  queue:
-    containers:
-      image:
-        repository: supinfo4kube/queue
-        tag: "1.0.1"
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
-        probe:
-          port: 8161
-        livenessProbe: true
-  position-simulator:
-    containers:
-      image:
-        repository: supinfo4kube/position-simulator
-        tag: "1.0.1"
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
-      spring: prod <-- this value is the value of spring profile describe a little above
-  position-tracker:
-    containers:
-      image:
-        repository: supinfo4kube/position-tracker
-        tag: "1.0.1"
-      resources:
-        requests:
-          memory: 512Mi"
-          cpu: "500m"
-        limits:
-          memory: "1Gi"
-          cpu: "1000m"
-      spring: prod
-  api-gateway:
-    containers:
-      image:
-        repository: supinfo4kube/api-gateway
-        tag: "1.0.1"
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "768Mi"
-          cpu: "750m"
-      spring: prod
-  webapp:
-    containers:
-      image:
-        repository: supinfo4kube/web-app
-        tag: "1.0.0"
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
-      spring: prod
-      probe:
-        port: 80
-      livenessProbe: true  
 ```
-Specific deployments are configured with their own parameters.
+**Spring profile**
+For modify the value of spring profile compared with global value you can proceed like this for exemple :
+```YAML 
+...
+      spring: prod
+```
+
+> [!Note] 
+> You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 
 # Deployment template Configuration
 

@@ -329,6 +329,36 @@ For modify the value of spring profile compared with global value you can procee
       spring: prod
 ```
 
+### Persistent Volumes 
+If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple : 
+```YAML
+persistentVolumesClaim:
+  mongodb-pv-claim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+```
+- ***nameofdeployment***-pv-claim : Name of persistantVolume, you need set the same name of deployment
+- accessModes:  
+	`ReadWriteOnce`
+	the volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can allow multiple pods to access the volume when the pods are running on the same node.
+
+	`ReadOnlyMany`
+	the volume can be mounted as read-only by many nodes.
+
+	`ReadWriteMany`
+	the volume can be mounted as read-write by many nodes.
+
+	`ReadWriteOncePod`
+**Feature state:**  `Kubernetes v1.27 [beta]`
+
+	the volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if you want to ensure that only one pod across the whole cluster can read that PVC or write to it. This is only supported for CSI volumes and Kubernetes version 1.22+.
+-  ressources : specific quantities of a resource. In this case, the request is for storage
+	- storage: (e.g. 8Gi determine 8 Go of storage) 
+	
 > [!Note] 
 > You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 

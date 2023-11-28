@@ -290,6 +290,7 @@ We will see the values ​​that you can add or modify in relation to the value
  ```
  **volumeMounts section**
 ```YAML 
+...
      volumeMounts: 
         - path: /data/db
           persistentVolumeClaim: true
@@ -299,7 +300,8 @@ the value `persistentVolumeClaim : true` is for your volume to be persistent, if
 
 If you want add multiple volume you just have to add a dash with `path : ` exemple : 
 
-```YAML 
+```YAML
+...
      volumeMounts: 
         - path: /data/db
           persistentVolumeClaim: true

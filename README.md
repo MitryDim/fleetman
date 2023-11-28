@@ -328,7 +328,8 @@ For modify the value of spring profile compared with global value you can procee
 ...
       spring: prod
 ```
-
+### Services
+Define service in values.yaml
 ### Persistent Volumes 
 If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple : 
 ```YAML
@@ -483,5 +484,85 @@ spec:
 ---
 {{- end }}
 ```
+## Service template configuration  
+This file generates Kubernetes objects of type "Service" using values ​​defined in the Values.yaml file. Each Service object corresponds to a specific deployment defined in the services section of the  `Values.yaml` file.
+
+The file begins with a loop that iterates over all the values ​​in the services section of the Values.yaml file.
+```YAML
+{{- range $key, $value := .Values.services }}
+``` 
+  >[!Note]
+>`{{  $key  }}` is the "key name" (application name) defined in section service in  `Values.yaml` file.
+
+```YAML
+...
+apiVersion:  v1  
+kind:  Service  
+metadata:  
+  name:  fleetman-{{  $key  }}
+ namespace: {{ $value.namespace | default $.Values.global.namespace }}
+  labels:
+  {{- with $value.labels }}
+    {{- toYaml . | nindent 4}}
+  {{ else }}
+    app: {{ $key }}
+  {{- end }}
+``` 
+-  Each deployment is defined as a Kubernetes object of type "Service" v1.
+-   **name:**The service name is defined as "fleetman-`{{  $key  }}`" 
+-   **namespace:** namespace is taken from the service values ​​in Values.yaml. If not defined, it uses the global namespace defined in Values.yaml.
+-   **labels:** Labels are set using the values ​​specified in Values.yaml. If no label is set, it defaults to  `app: {{  $key  }}`` .
+
+**Service Specification**
+
+The Service spec section is defined with the selector, service type, and ports.
+
+```YAML
+...
+spec:
+  selector:
+  {{- with $value.labels }}
+    {{- toYaml . | nindent 4}}
+  {{ else }}
+    app: {{ $key }}
+  {{- end }}
+``` 
+
+-   **selector:** The selector is set based on the service labels. If no label is set, it defaults to `app: {{ $key }}`
+
+```YAML
+...
+  type: {{ $value.type | default $.Values.global.service.type }}
+{{- end }}
+```
+-   **type:** The service type is defined using the values ​​specified in Values.yaml. If not defined, it uses the global service type defined in Values.yaml.
+
+```YAML
+...
+  ports:
+   {{- range $index, $port := $value.ports }}
+   {{- $firstValuePort := splitList ":" $port| first | int }}
+    - port: {{ $firstValuePort | default $port | int }}
+    {{- if and (eq $value.type "NodePort") (eq $index 0) }}
+      nodePort: {{ splitList ":" $port| last | int | default $port | int }}
+    {{- end }}
+      name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
+```
+-   **ports:** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for the default port i.e. the internal port and if the service type is NodePort, the nodePort is also specified.
+- **name:** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
+  
+> [!Note] 
+> Each generated Service object is separated by `---` in the final YAML file.
+
+```YAML
+...
+---
+{{- end}}
+```
+The `{{- end}}` close the loop 
+
+>[!Warning]
+>pay attention to the indentation in the template file.
+
 > [!CAUTION]
 > If you modify a value and is not correct, this can create an error ! Please make sure if you modify.

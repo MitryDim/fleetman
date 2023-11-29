@@ -403,11 +403,25 @@ spec:
         app: {{ $key }}
       {{- end }}
     spec:
+
+```
+
+Containers Informations
+
+**containers** is where detailed information about the pods containers is specified. Each container within a pod is defined by the following block and sections
+
+```YAML
       containers:
         - name: {{ $key }} <-- The name the name for the Container
           imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
           image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
 ```
+
+  - **name** : The name assigned to the container, which can be dynamically generated using the value of `$key`. This name is used to uniquely identify the container within the pod.
+
+  - **imagePullPolicy** : The policy for pulling the container image. It is derived from the configuration, with a default value set to `$.Values.global.image.pullPolicy` if not explicitly defined for the container.
+
+  - **image** : The container image to be used.
 
 
 #### Resources Managements
@@ -426,6 +440,14 @@ The next section deals with configuring resources (CPU and memory) for container
           {{- end -}}
 ```
 This section checks whether specific resources have been defined for the container. If so, they are added to the resources section. If not, the default values specified in the global parameters are used.
+
+  - request:
+      - memory: The amount of memory the container requests.
+      - cpu: The amount of processing power (CPU) the container requests.
+
+  - limits:
+    - memory: The maximum amount of memory the container can use.
+    - cpu: The maximum amount of processing power (CPU) the container can use.
 
 #### Secrets
 
@@ -465,6 +487,12 @@ This section deals with port configuration for the container. It first checks wh
             {{- end }}
           {{- end }}
 ```
+
+ - ports: containerPort is specified by iterating over the ports defined for the service in Values.yaml. The first port is used for the default port i.e. the internal port and if the service type is NodePort, the nodePort is also specified.
+
+ - name: As the port name it was defined with this concatenation of `{{ $key }}-{{ . }}`,
+  {{ $key }}: This is a variable that holds a value, obtained from iterating over the range.
+  {{ . }}: This refers to the current item in the range.
 
 ---
 ## Probes section

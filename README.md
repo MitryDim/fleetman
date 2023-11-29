@@ -412,7 +412,7 @@ spec:
 
 #### Resources Managements
 
-La section suivante concerne la configuration des ressources (CPU et mémoire) pour les conteneurs du déploiement Kubernetes.
+The next section deals with configuring resources (CPU and memory) for containers in the Kubernetes deployment.
 
 ```YAML
           {{- if $value.containers.resources | default $.Values.global.resources }}
@@ -425,19 +425,11 @@ La section suivante concerne la configuration des ressources (CPU et mémoire) p
               cpu: {{ .limits.cpu | default $.Values.global.resources.limits.cpu }}
           {{- end -}}
 ```
-
-Cette partie vérifie si des ressources spécifiques sont définies pour le conteneur. Si tel est le cas, elles sont ajoutées à la section resources. Les valeurs spécifiques sont prises en compte, sinon, les valeurs par défaut spécifiées dans les paramètres globaux sont utilisées.
-
-    - Request :
-        memory: La quantité de mémoire que le conteneur demande.
-        cpu: La quantité de puissance de traitement (CPU) que le conteneur demande.
-    - Limits :
-        memory: La quantité maximale de mémoire que le conteneur peut utiliser.
-        cpu: La quantité maximale de puissance de traitement (CPU) que le conteneur peut utiliser.
+This section checks whether specific resources have been defined for the container. If so, they are added to the resources section. If not, the default values specified in the global parameters are used.
 
 #### Secrets
 
-Cette partie vérifie si des secrets sont spécifiés pour le conteneur. Si c'est le cas, ils sont injectés dans le conteneur en utilisant la directive **envFrom**. Cela permet au conteneur d'accéder aux valeurs secrètes.
+This part checks whether secrets are specified for the container. If so, they are injected into the container using the **envFrom** directive. This allows the container to access the secret values.
 
 ```YAML
           {{- with $value.containers.secret }}
@@ -447,9 +439,9 @@ Cette partie vérifie si des secrets sont spécifiés pour le conteneur. Si c'es
           {{- end -}}
 ```
 
-#### Variables d'Environnement Spring
+#### Spring environment variables
 
-Si la configuration spécifie des variables d'environnement Spring pour le conteneur, elles sont ajoutées à la section env. Cela peut être utile pour la configuration spécifique aux applications Spring.
+If the configuration specifies Spring environment variables for the container, they are added to the env section. This can be useful for Spring application-specific configuration.
 
 ```YAML
           {{- if $value.containers.spring }}
@@ -462,7 +454,7 @@ Si la configuration spécifie des variables d'environnement Spring pour le conte
 
 #### Ports
 
-Cette partie traite de la configuration des ports pour le conteneur. Elle vérifie d'abord si des ports sont spécifiés pour ce conteneur. Si c'est le cas, ils sont ajoutés à la section ports. Chaque port est associé à un nom unique construit à partir de la clé du déploiement et du numéro de port.
+This section deals with port configuration for the container. It first checks whether ports are specified for this container. If so, they are added to the ports section. Each port is assigned a unique name based on the deployment key and port number.
 
 ```YAML
           {{- if $value.containers.ports }}
@@ -475,96 +467,102 @@ Cette partie traite de la configuration des ports pour le conteneur. Elle vérif
 ```
 
 ---
-## Section des Probes
+## Probes section
 
-La section des sondes gère les sondes de disponibilité (livenessProbe et readinessProbe) pour chaque conteneur du déploiement.
+The probes section manages the availability probes (livenessProbe and readinessProbe) for each container in the deployment.
 
 
-#### LivenessProbe
-La sous-section livenessProbe détermine si le conteneur est en cours d'exécution correctement. Elle peut également être configurée avec le type httpGet ou tcpSocket.
+#### Liveness Probe
+
+The livenessProbe sub-section determines whether the container is running correctly. It checks the type, httpGet or tcpSocket, with values depending on the type used.
 
 ```YAML
-      {{- if $value.containers.livenessProbe }}
-      {{- with $value.containers.probe }}
-      livenessProbe:
-        {{- $livenessProbeType := .type | default $.Values.global.livenessProbe.type -}}
+          {{- if $value.containers.livenessProbe }}
+          {{- with $value.containers.probe }}
+          livenessProbe:
+            {{- $livenessProbeType := .type | default $.Values.global.livenessProbe.type -}}
 
-        {{- if eq $livenessProbeType "httpGet" }}
-        httpGet:
-          path: {{ .path | default $.Values.global.readinessProbe.path }}
-          port: {{ .port }}
-        {{- else if eq $livenessProbeType "tcpSocket"}}
-        tcpSocket:
-          port: {{ .port }}
-        {{- end }}
-        initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
-        periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
-      {{- end }}
-      {{- end }}
+            {{- if eq $livenessProbeType "httpGet" }}
+            httpGet:
+              path: {{ .path | default $.Values.global.readinessProbe.path }}
+              port: {{ .port }}
+            {{- else if eq $livenessProbeType "tcpSocket"}}
+            tcpSocket:
+              port: {{ .port }}
+            {{- end }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- end }}
 ```
 
-#### ReadinessProbe
-La sous-section readinessProbe détermine si le conteneur est prêt à recevoir du trafic. Elle peut être configurée en utilisant le type httpGet ou tcpSocket.
+#### Readiness Probe
+
+The readinessProbe sub-section determines whether the container is ready to receive traffic. It checks the type, httpGet or tcpSocket, with values depending on the type used.
 
 ```YAML
 
-      {{- if $value.containers.readinessProbe }}
-      {{- with $value.containers.probe }}
-      readinessProbe:
-        {{- $readinessProbeType := .type | default $.Values.global.readinessProbe.type -}}
+          {{- if $value.containers.readinessProbe }}
+          {{- with $value.containers.probe }}
+          readinessProbe:
+            {{- $readinessProbeType := .type | default $.Values.global.readinessProbe.type -}}
 
-        {{- if eq $readinessProbeType "httpGet" }}
-        httpGet:
-          path: {{ .path | default $.Values.global.readinessProbe.path }}
-          port: {{ .port }}
-        {{- else if eq $readinessProbeType "tcpSocket"}}
-        tcpSocket:
-          port: {{ .port }}
-        {{- end }}
-        initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
-        periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
-      {{- end }}
-      {{- end }}
+            {{- if eq $readinessProbeType "httpGet" }}
+            httpGet:
+              path: {{ .path | default $.Values.global.readinessProbe.path }}
+              port: {{ .port }}
+            {{- else if eq $readinessProbeType "tcpSocket"}}
+            tcpSocket:
+              port: {{ .port }}
+            {{- end }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
+          {{- end }}
+          {{- end }}
 ```
 ---
 
-## Section des Volumes
+## Volumes section
 
-La section des volumes gère la configuration des volumes et des montages pour chaque déploiement.
+The volumes section manages the configuration of volumes and mounts for each deployment.
 
 #### Volume Mounts
-La sous-section volumeMounts spécifie les points de montage pour les volumes dans le conteneur.
+
+The volumeMounts specify the mounting points for the volumes in the container.
 
 ```YAML
-{{- if $value.containers.volumeMounts }}
-volumeMounts:
-  {{- range $index, $volume := $value.containers.volumeMounts }}
-  - mountPath: {{ $volume.path }}
-    name: {{ $key }}-{{ $index }}
-  {{- end }}
-{{- end }}
+          {{- if $value.containers.volumeMounts }}
+          volumeMounts:
+            {{- range $index, $volume := $value.containers.volumeMounts }}
+            - mountPath: {{ $volume.path }}
+              name: {{ $key }}-{{ $index }}
+            {{- end }}
+          {{- end }}
 ```
 
 #### Volumes
 
-La sous-section volumes configure les volumes utilisés dans le pod.
+The volumes sub-section configures the volumes used in pods.
 
 ```YAML
-{{- if $value.containers.volumeMounts }}
-volumes:
-  {{- range $index, $volume := $value.containers.volumeMounts }}
-  - name: {{ $key }}-{{ $index }}
-    {{- if $volume.emptyDir }}
-    emptyDir: {{ $volume.emptyDir }}
-    {{- end }}
-    {{- if $volume.persistentVolumeClaim | default false }}
-    persistentVolumeClaim:
-      claimName: {{ $key }}-pv-claim
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
+          {{- if $value.containers.volumeMounts }}
+          volumes:
+            {{- range $index, $volume := $value.containers.volumeMounts }}
+            - name: {{ $key }}-{{ $index }}
+              {{- if $volume.emptyDir }}
+              emptyDir: {{ $volume.emptyDir }}
+              {{- end }}
+              {{- if $volume.persistentVolumeClaim | default false }}
+              persistentVolumeClaim:
+                claimName: {{ $key }}-pv-claim
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
 ```
+
+>[!Warning]
+> Ne copiez pas les bouts de code, il est possible qu'il  "le fait que certain element soit en trop ou manquant"   et que l'indentation ne soit pas correct
 
 ---
 
@@ -575,7 +573,7 @@ The file begins with a loop that iterates over all the values ​​in the servi
 ```YAML
 {{- range $key, $value := .Values.services }}
 ``` 
-  >[!Note]
+>[!Note]
 >`{{  $key  }}` is the "key name" (application name) defined in section service in  `Values.yaml` file.
 
 ```YAML

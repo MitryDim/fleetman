@@ -76,7 +76,7 @@ deployments:
         tag: "1.0.1"
       resources:
         requests:
-          memory: 512Mi"
+          memory: "512Mi"
           cpu: "500m"
         limits:
           memory: "1Gi"

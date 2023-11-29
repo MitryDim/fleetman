@@ -58,7 +58,7 @@ spec:
           ports:
             {{- range $value.containers.ports | default $.Values.global.ports }}
             - containerPort: {{ . }}
-              name: {{ $key }}-{{ . }}
+              name: port-{{ . }}
             {{- end }}
           {{- end }}
           {{- if $value.containers.livenessProbe }}

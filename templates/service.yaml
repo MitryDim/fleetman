@@ -21,11 +21,10 @@ spec:
   ports:
    {{- range $index,$port := $value.ports }}
    {{- $firstValuePort := splitList ":" $port| first | int }}
-    - port: {{ $firstValuePort | default $port | int }}
-    {{- if and (eq $value.type "NodePort") (eq $index 0) }}
-      nodePort: {{ splitList ":" $port| last | int | default $port | int }}
-    {{- end }}
-      name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
+    - name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
+      port: {{ $firstValuePort | default $port | int }}
+      targetPort: {{  splitList ":" $port | last | default $port | int  }} 
+      protocol: TCP
 {{- end }}
 ---
 {{- end}}

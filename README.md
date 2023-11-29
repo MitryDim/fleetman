@@ -371,48 +371,77 @@ persistentVolumesClaim:
 This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
 
 ```YAML
-{{- range $key, $value := .Values.deployments }}
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  namespace: {{ $value.namespace | default $.Values.global.namespace }} <-- value override or in global value
-  name: {{ $key }} <-- the key is name of the deployment is value file you have set
-  labels:
-  {{- with $value.labels }} <-- if you configure value of label this get all values but is nothing the default app: name of deployment
-    {{- toYaml . | nindent 4}}
-  {{ else }}
-    app: {{ $key }}
-  {{- end }}
-spec:
-  replicas: {{ $value.replicaCount | default $.Values.global.replicaCount }} <-- The `replicas` option expects an integer and defines how many pods Kubernetes will create for this component the value is override if you set an value in value file by default is the value of global section
-  selector:
-    matchLabels:
-      {{- with $value.labels }}  <-- if you configure value of label this get all values but is nothing the default app: name of deployment
-        {{- toYaml . | nindent 6}}
-      {{ else }}
-        app: {{ $key }}
-      {{- end }}
-  template:
-    metadata:
-      labels:
-      {{- with $value.labels }}  <-- if you configure value of label this get all values but is nothing the default app: name of deployment
-        {{- toYaml . | nindent 8}}
-      {{ else }}
-        app: {{ $key }}
-      {{- end }}
-    spec:
-
+          {{- range $key, $value := .Values.deployments }}
 ```
+
+This line initiates a loop that iterates through each element in the deployments array defined in the values (.Values). $key represents the key (name) of each element, and $value represents the associated value.
+
+Kubernetes Deployment Declaration:
+
+```YAML
+          apiVersion: apps/v1
+          kind: Deployment
+```
+
+This section indicates the Kubernetes API version and the resource type, which is a deployment.
+
+Deployment Metadata:
+
+```YAML
+          metadata:
+            namespace: {{ $value.namespace | default $.Values.global.namespace }}
+            name: {{ $key }}
+```
+
+These metadata include the deployment's namespace, which is either specified in the values ($value.namespace) or defaults to the global value ($.Values.global.namespace). The deployment name ($key) is based on the element's key in the array.
+
+Deployment Labels:
+
+```YAML
+          labels:
+            {{- with $value.labels }}
+              {{- toYaml . | nindent 4}}
+            {{ else }}
+              app: {{ $key }}
+            {{- end }}
+```
+Labels are defined here. If specific labels are configured in the values ($value.labels), they are used. Otherwise, a default label app: $key is used.
+
+Deployment Specification (Spec):
+
+```YAML
+          spec:
+            replicas: {{ $value.replicaCount | default $.Values.global.replicaCount }}
+            selector:
+              matchLabels:
+                {{- with $value.labels }}
+                  {{- toYaml . | nindent 6}}
+                {{ else }}
+                  app: {{ $key }}
+                {{- end }}
+            template:
+              metadata:
+                labels:
+                  {{- with $value.labels }}
+                    {{- toYaml . | nindent 8}}
+                  {{ else }}
+                    app: {{ $key }}
+                  {{- end }}
+              spec:
+```
+
+The deployment specification includes the number of replicas (replicas)
+
 
 Containers Informations
 
 **containers** is where detailed information about the pods containers is specified. Each container within a pod is defined by the following block and sections
 
 ```YAML
-      containers:
-        - name: {{ $key }} <-- The name the name for the Container
-          imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
-          image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
+          containers:
+            - name: {{ $key }} <-- The name the name for the Container
+              imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
+              image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
 ```
 
   - **name** : The name assigned to the container, which can be dynamically generated using the value of `$key`. This name is used to uniquely identify the container within the pod.

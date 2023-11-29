@@ -363,18 +363,23 @@ persistentVolumesClaim:
 > [!Note] 
 > You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 
-# Deployment template Configuration
+---
+
+## Deployment template Configuration
+
+TRADUIRE EN ANGLAIS ET AJOUTER DETAILS + FINIR
 
 
 This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
+
 ```YAML
 {{- range $key, $value := .Values.deployments }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ $value.namespace | default $.Values.global.namespace }} <-- value override or in global value 
+  namespace: {{ $value.namespace | default $.Values.global.namespace }} <-- value override or in global value
   name: {{ $key }} <-- the key is name of the deployment is value file you have set
-  labels: 
+  labels:
   {{- with $value.labels }} <-- if you configure value of label this get all values but is nothing the default app: name of deployment
     {{- toYaml . | nindent 4}}
   {{ else }}
@@ -402,89 +407,168 @@ spec:
         - name: {{ $key }} <-- The name the name for the Container
           imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
           image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
+```
+
+
+#### Resources Managements
+
+La section suivante concerne la configuration des ressources (CPU et mémoire) pour les conteneurs du déploiement Kubernetes.
+
+```YAML
           {{- if $value.containers.resources | default $.Values.global.resources }}
           resources:
             request:
-              memory: {{ .request.memory}}
-              cpu: {{ .request.cpu}}
+              memory: {{ .request.memory | default $.Values.global.resources.request.memory }}
+              cpu: {{ .request.cpu | default $.Values.global.resources.request.cpu }}
             limits:
-              memory: {{ .limits.memory}}
-              cpu: {{ .limits.cpu}}
+              memory: {{ .limits.memory | default $.Values.global.resources.limits.memory }}
+              cpu: {{ .limits.cpu | default $.Values.global.resources.limits.cpu }}
           {{- end -}}
+```
+
+Cette partie vérifie si des ressources spécifiques sont définies pour le conteneur. Si tel est le cas, elles sont ajoutées à la section resources. Les valeurs spécifiques sont prises en compte, sinon, les valeurs par défaut spécifiées dans les paramètres globaux sont utilisées.
+
+    - Request :
+        memory: La quantité de mémoire que le conteneur demande.
+        cpu: La quantité de puissance de traitement (CPU) que le conteneur demande.
+    - Limits :
+        memory: La quantité maximale de mémoire que le conteneur peut utiliser.
+        cpu: La quantité maximale de puissance de traitement (CPU) que le conteneur peut utiliser.
+
+#### Secrets
+
+Cette partie vérifie si des secrets sont spécifiés pour le conteneur. Si c'est le cas, ils sont injectés dans le conteneur en utilisant la directive **envFrom**. Cela permet au conteneur d'accéder aux valeurs secrètes.
+
+```YAML
           {{- with $value.containers.secret }}
-          envFrom :
+          envFrom:
             - secretRef:
                 name: {{ . }}
           {{- end -}}
+```
+
+#### Variables d'Environnement Spring
+
+Si la configuration spécifie des variables d'environnement Spring pour le conteneur, elles sont ajoutées à la section env. Cela peut être utile pour la configuration spécifique aux applications Spring.
+
+```YAML
           {{- if $value.containers.spring }}
-          {{- $value := index $.Values.spring $value.containers.spring }}
+          {{- $springValue := index $.Values.spring $value.containers.spring }}
           env:
-            - name: {{ $value.name }}
-              value: {{ $value.value }}
+            - name: {{ $springValue.name }}
+              value: {{ $springValue.value }}
           {{- end }}
-          {{- if $value.containers.ports}}
+```
+
+#### Ports
+
+Cette partie traite de la configuration des ports pour le conteneur. Elle vérifie d'abord si des ports sont spécifiés pour ce conteneur. Si c'est le cas, ils sont ajoutés à la section ports. Chaque port est associé à un nom unique construit à partir de la clé du déploiement et du numéro de port.
+
+```YAML
+          {{- if $value.containers.ports }}
           ports:
             {{- range $value.containers.ports | default $.Values.global.ports }}
             - containerPort: {{ . }}
               name: {{ $key }}-{{ . }}
             {{- end }}
           {{- end }}
-          {{- if $value.containers.livenessProbe }}
-          {{- with $value.containers.probe }}
-          livenessProbe:
-          {{- $livenessProbeType := .type  | default $.Values.global.livenessProbe.type -}}
-          {{- if eq $livenessProbeType "httpGet" }}
-            httpGet:
-          {{- else if eq $livenessProbeType "tcpSocket"}}
-            tcpSocket:
-          {{- end }}
-          {{- if ne $livenessProbeType "tcpSocket" }}
-              path: {{ .path | default $.Values.global.readinessProbe.path}}
-          {{- end }}
-              port: {{ .port }}
-            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
-          {{- end }}
-          {{- end }}
-          {{- if $value.containers.readinessProbe }}
-          {{- with $value.containers.probe }}
-          readinessProbe:
-          {{- $readinessProbeType := .type  | default $.Values.global.readinessProbe.type -}}
-          {{- if eq $readinessProbeType "httpGet" }}
-            httpGet:
-          {{- else if eq $readinessProbeType "tcpSocket"}}
-            tcpSocket:
-          {{- end }}
-          {{- if ne $readinessProbeType "tcpSocket" }}
-              path: {{ .path | default $.Values.global.readinessProbe.path}}
-          {{- end }}
-              port: {{ .port }}
-            initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
-          {{- end }}
-          {{- end }}
-    {{- if $value.containers.volumeMounts }}
-          volumeMounts:
-            {{- range $index, $volume := $value.containers.volumeMounts }}
-            - mountPath: {{ $volume.path}}
-              name: {{ $key }}-{{ $index }}
-            {{- end }}
-      volumes:
-      {{- range $index, $volume := $value.containers.volumeMounts }}
-        - name: {{ $key }}-{{ $index }}
-        {{- if $volume.emptyDir}}
-          emptyDir: {{ $volume.emptyDir }}
-        {{- end }}
-        {{- if $volume.persistentVolumeClaim | default false }}
-          persistentVolumeClaim:
-            claimName: {{ $key }}-pv-claim
-        {{ end }}
-      {{ end }}
-    {{ end }}
+```
+
 ---
+## Section des Probes
+
+La section des sondes gère les sondes de disponibilité (livenessProbe et readinessProbe) pour chaque conteneur du déploiement.
+
+
+#### LivenessProbe
+La sous-section livenessProbe détermine si le conteneur est en cours d'exécution correctement. Elle peut également être configurée avec le type httpGet ou tcpSocket.
+
+```YAML
+      {{- if $value.containers.livenessProbe }}
+      {{- with $value.containers.probe }}
+      livenessProbe:
+        {{- $livenessProbeType := .type | default $.Values.global.livenessProbe.type -}}
+
+        {{- if eq $livenessProbeType "httpGet" }}
+        httpGet:
+          path: {{ .path | default $.Values.global.readinessProbe.path }}
+          port: {{ .port }}
+        {{- else if eq $livenessProbeType "tcpSocket"}}
+        tcpSocket:
+          port: {{ .port }}
+        {{- end }}
+        initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.livenessProbe.initialDelaySeconds }}
+        periodSeconds: {{ .periodSeconds | default $.Values.global.livenessProbe.periodSeconds }}
+      {{- end }}
+      {{- end }}
+```
+
+#### ReadinessProbe
+La sous-section readinessProbe détermine si le conteneur est prêt à recevoir du trafic. Elle peut être configurée en utilisant le type httpGet ou tcpSocket.
+
+```YAML
+
+      {{- if $value.containers.readinessProbe }}
+      {{- with $value.containers.probe }}
+      readinessProbe:
+        {{- $readinessProbeType := .type | default $.Values.global.readinessProbe.type -}}
+
+        {{- if eq $readinessProbeType "httpGet" }}
+        httpGet:
+          path: {{ .path | default $.Values.global.readinessProbe.path }}
+          port: {{ .port }}
+        {{- else if eq $readinessProbeType "tcpSocket"}}
+        tcpSocket:
+          port: {{ .port }}
+        {{- end }}
+        initialDelaySeconds: {{ .initialDelaySeconds | default $.Values.global.readinessProbe.initialDelaySeconds }}
+        periodSeconds: {{ .periodSeconds | default $.Values.global.readinessProbe.periodSeconds }}
+      {{- end }}
+      {{- end }}
+```
+---
+
+## Section des Volumes
+
+La section des volumes gère la configuration des volumes et des montages pour chaque déploiement.
+
+#### Volume Mounts
+La sous-section volumeMounts spécifie les points de montage pour les volumes dans le conteneur.
+
+```YAML
+{{- if $value.containers.volumeMounts }}
+volumeMounts:
+  {{- range $index, $volume := $value.containers.volumeMounts }}
+  - mountPath: {{ $volume.path }}
+    name: {{ $key }}-{{ $index }}
+  {{- end }}
 {{- end }}
 ```
-## Service template configuration  
+
+#### Volumes
+
+La sous-section volumes configure les volumes utilisés dans le pod.
+
+```YAML
+{{- if $value.containers.volumeMounts }}
+volumes:
+  {{- range $index, $volume := $value.containers.volumeMounts }}
+  - name: {{ $key }}-{{ $index }}
+    {{- if $volume.emptyDir }}
+    emptyDir: {{ $volume.emptyDir }}
+    {{- end }}
+    {{- if $volume.persistentVolumeClaim | default false }}
+    persistentVolumeClaim:
+      claimName: {{ $key }}-pv-claim
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+```
+
+---
+
+## Service template configuration
 This file generates Kubernetes objects of type "Service" using values ​​defined in the Values.yaml file. Each Service object corresponds to a specific deployment defined in the services section of the  `Values.yaml` file.
 
 The file begins with a loop that iterates over all the values ​​in the services section of the Values.yaml file.

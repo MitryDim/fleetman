@@ -367,8 +367,6 @@ persistentVolumesClaim:
 
 ## Deployment template Configuration
 
-TRADUIRE EN ANGLAIS ET AJOUTER DETAILS + FINIR
-
 
 This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
 

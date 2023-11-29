@@ -107,7 +107,7 @@ The service.yaml file defines Kubernetes services generated from the values defi
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
 
-## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration 
+## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration
 
 ### Spring values
 >[!Note]
@@ -124,13 +124,13 @@ spring:
 ### Configuration of the global values
 The `global` section in the configuration file holds essential parameters that influence the overall behavior of the Fleetman application.
 
-the global configuration start with this section : 
+the global configuration start with this section :
 ```YAML
 global:
 ```
 #### Deployment
 
-The default configuration for deployment is directly in global section : 
+The default configuration for deployment is directly in global section :
 ```YAML
   namespace: default
   replicaCount: 1
@@ -138,7 +138,7 @@ The default configuration for deployment is directly in global section :
   image:
     tag: "latest"
     pullPolicy: IfNotPresent
-  ports: 
+  ports:
     - 80
 ```
 >[!Warning]
@@ -150,7 +150,7 @@ The default configuration for deployment is directly in global section :
 -   **Image Configuration:** Defines the default tag and pull policy are specified, providing a starting point for the deployment.
 
 -   **Ports Configuration:** Specifies the internal ports used by the application. If an internal and external port need to differ, a mapping can be defined (e.g., `InternalPort:ExternalPort`). For example, if the type is NodePort, the externally accessible port would be `36500`, pointing to the internal port `80`.
-    
+
 Default Memory and CPU usage if their not given by the user, based on Computer Capacity
 
 ```YAML
@@ -181,14 +181,14 @@ To limit the resources of a container, simply configure the  `limits`  within th
 > This global configuration provides a foundation for Fleetman's deployment, with default values that can be adjusted based on specific deployment requirements.
 
 #### Service
-The default configuration of the service is in the global section and then in the service section: 
+The default configuration of the service is in the global section and then in the service section:
 ``` YAML
 global:
   ...
   service:
-    type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer 
-    protocol: TCP #Default protocol is TCP Docs : ) 
-    livenessProbe: 
+    type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer
+    protocol: TCP #Default protocol is TCP Docs : )
+    livenessProbe:
      ...
     readinessProbe:
     ...
@@ -196,11 +196,11 @@ global:
    **Service Configuration:**
    -  Type: `ClusterIP` (Default)
    -   Protocol: `TCP` (Default)
-  
-  Defines the default configuration for Kubernetes services. 
- The service type[^1] is set to `ClusterIP` by default, but alternatives include `NodePort` and `LoadBalancer`. 
+
+  Defines the default configuration for Kubernetes services.
+ The service type[^1] is set to `ClusterIP` by default, but alternatives include `NodePort` and `LoadBalancer`.
  The protocol[^2] is set to `TCP`, and liveness and readiness [^3] probes are configured to monitor the health of the application.
- 
+
 ```YAML
     ...
     livenessProbe:
@@ -223,7 +223,7 @@ global:
 
 These settings define how Kubernetes monitors the health of a container. The liveness probe checks if the container is live and responsive, while the readiness probe checks if the container is ready to receive traffic.
 
->[!Caution] 
+>[!Caution]
 >Liveness probes can be a powerful way to recover from application failures, but they should be used with caution. Liveness probes must be configured carefully to ensure that they truly indicate unrecoverable application failure, for example a deadlock.
 
 > [!Note]
@@ -234,8 +234,8 @@ These settings define how Kubernetes monitors the health of a container. The liv
 [^3]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
 
-### Configuration of deployments values 
- In the `values.yaml` file the deployment start with this section : 
+### Configuration of deployments values
+ In the `values.yaml` file the deployment start with this section :
 
 ```YAML
 deployments:
@@ -262,10 +262,10 @@ deployments:
     containers:
       ...
  ```
- 
+
 We will see the values ​​that you can add or modify in relation to the values ​​of the global section
 >[!Note]
-> All the value has in containers section. 
+> All the value has in containers section.
 
 **image section**
 ```YAML
@@ -274,7 +274,7 @@ We will see the values ​​that you can add or modify in relation to the value
         repository: mongo
         tag: "3.6.23"
 ```
-- the repository as a image of [docker hub](https://hub.docker.com/) 
+- the repository as a image of [docker hub](https://hub.docker.com/)
 - tag as version of image
 
 **resources section**
@@ -289,20 +289,20 @@ We will see the values ​​that you can add or modify in relation to the value
           cpu: "500m"
  ```
  **volumeMounts section**
-```YAML 
+```YAML
 ...
-     volumeMounts: 
+     volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
 ```
-If you want add a volume you can add this section. 
+If you want add a volume you can add this section.
 the value `persistentVolumeClaim : true` is for your volume to be persistent, if you don't want you just have to delete this value.
 
-If you want add multiple volume you just have to add a dash with `path : ` exemple : 
+If you want add multiple volume you just have to add a dash with `path : ` exemple :
 
 ```YAML
 ...
-     volumeMounts: 
+     volumeMounts:
         - path: /data/db
           persistentVolumeClaim: true
         - path: /data/db1
@@ -310,7 +310,7 @@ If you want add multiple volume you just have to add a dash with `path : ` exemp
 
 **Use Probe**
 If you want add readinessProbe or livenessProbe you can add these values :
-```YAML 
+```YAML
 ...
       readinessProbe: true
       livenessProbe: true
@@ -324,14 +324,14 @@ For modify the value of Probe compared with global value you can proceed like th
 ```
 **Spring profile**
 For modify the value of spring profile compared with global value you can proceed like this for exemple :
-```YAML 
+```YAML
 ...
       spring: prod
 ```
 ### Services
 Define service in values.yaml
-### Persistent Volumes 
-If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple : 
+### Persistent Volumes
+If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple :
 ```YAML
 persistentVolumesClaim:
   mongodb-pv-claim:
@@ -343,7 +343,7 @@ persistentVolumesClaim:
           storage: 8Gi
 ```
 - ***nameofdeployment***-pv-claim : Name of persistantVolume, you need set the same name of deployment
-- accessModes:  
+- accessModes:
 	`ReadWriteOnce`
 	the volume can be mounted as read-write by a single node. ReadWriteOnce access mode still can allow multiple pods to access the volume when the pods are running on the same node.
 
@@ -358,9 +358,9 @@ persistentVolumesClaim:
 
 	the volume can be mounted as read-write by a single Pod. Use ReadWriteOncePod access mode if you want to ensure that only one pod across the whole cluster can read that PVC or write to it. This is only supported for CSI volumes and Kubernetes version 1.22+.
 -  ressources : specific quantities of a resource. In this case, the request is for storage
-	- storage: (e.g. 8Gi determine 8 Go of storage) 
-	
-> [!Note] 
+	- storage: (e.g. 8Gi determine 8 Go of storage)
+
+> [!Note]
 > You can modifie this values or add other values ​​that are in the global values ​​this will do an override.
 
 ---
@@ -572,15 +572,15 @@ This file generates Kubernetes objects of type "Service" using values ​​defi
 The file begins with a loop that iterates over all the values ​​in the services section of the Values.yaml file.
 ```YAML
 {{- range $key, $value := .Values.services }}
-``` 
+```
 >[!Note]
 >`{{  $key  }}` is the "key name" (application name) defined in section service in  `Values.yaml` file.
 
 ```YAML
 ...
-apiVersion:  v1  
-kind:  Service  
-metadata:  
+apiVersion:  v1
+kind:  Service
+metadata:
   name:  fleetman-{{  $key  }}
  namespace: {{ $value.namespace | default $.Values.global.namespace }}
   labels:
@@ -589,9 +589,9 @@ metadata:
   {{ else }}
     app: {{ $key }}
   {{- end }}
-``` 
+```
 -  Each deployment is defined as a Kubernetes object of type "Service" v1.
--   **name:**The service name is defined as "fleetman-`{{  $key  }}`" 
+-   **name:**The service name is defined as "fleetman-`{{  $key  }}`"
 -   **namespace:** namespace is taken from the service values ​​in Values.yaml. If not defined, it uses the global namespace defined in Values.yaml.
 -   **labels:** Labels are set using the values ​​specified in Values.yaml. If no label is set, it defaults to  `app: {{  $key  }}`` .
 
@@ -608,7 +608,7 @@ spec:
   {{ else }}
     app: {{ $key }}
   {{- end }}
-``` 
+```
 
 -   **selector:** The selector is set based on the service labels. If no label is set, it defaults to `app: {{ $key }}`
 
@@ -632,8 +632,8 @@ spec:
 ```
 -   **ports:** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for the default port i.e. the internal port and if the service type is NodePort, the nodePort is also specified.
 - **name:** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
-  
-> [!Note] 
+
+> [!Note]
 > Each generated Service object is separated by `---` in the final YAML file.
 
 ```YAML
@@ -641,7 +641,7 @@ spec:
 ---
 {{- end}}
 ```
-The `{{- end}}` close the loop 
+The `{{- end}}` close the loop
 
 >[!Warning]
 >pay attention to the indentation in the template file.

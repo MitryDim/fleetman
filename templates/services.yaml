@@ -24,7 +24,7 @@ spec:
     - name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
       port: {{ $firstValuePort | default $port | int }}
       targetPort: {{  splitList ":" $port | last | default $port | int  }} 
-      protocol: {{$port.protocol | default $.Values.global.service.protocol }}
+      protocol: {{ $.Values.global.service.protocol }}
 {{- end }}
 ---
 {{- end}}

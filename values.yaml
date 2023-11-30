@@ -135,7 +135,7 @@ services:
   webapp:
     type: "LoadBalancer"
     ports:
-      - "80"
+      - "30080:80"
 
 #Value for persistentVolumes
 persistentVolumesClaim:

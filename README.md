@@ -52,7 +52,7 @@ The project is a web application that allows real-time tracking of a fleet of ve
 The goal of this project is to deploy this application with [Kubernetes](https://kubernetes.io/) as well as with the package manager [Helm](https://helm.sh/fr/), which will allow us to configure and deploy our application efficiently.
 
 ### Elements at our disposal :
-Pour ce projet, nous utiliserons les images Dockers de supinfo4kube pour l'application et mongo pour la base de données.
+For this project, we'll be using supinfo4kube Docker images for the application and mongo for the database.
 -  **[fleetman-position-simulator](https://hub.docker.com/r/supinfo4kube/position-simulator)** : a Spring Boot application that continuously transmits fictitious vehicle positions.
 -  **[fleetman-queue](https://hub.docker.com/r/supinfo4kube/queue)** : an Apache ActiveMQ queue that receives and transmits these positions.
 - **[fleetman-position-tracker](https://hub.docker.com/r/supinfo4kube/position-tracker)** : a Spring Boot application that consumes these received positions and stores them in a MongoDB database. They are then made available via a RESTful API.
@@ -548,7 +548,7 @@ The **replicas** field specifies the desired number of replicas (instances) of t
           containers:
             - name: {{ $key }} <-- The name the name for the Container
               imagePullPolicy: {{ $value.containers.pullPolicy | default $.Values.global.image.pullPolicy }}
-              image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag  | default $.Values.global.image.tag}}"
+              image: "{{ $value.containers.image.repository | default $key }}:{{ $value.containers.image.tag | default $.Values.global.image.tag}}"
 ```
 
   - **name** : The name assigned to the container, which can be dynamically generated using the value of `$key`. This name is used to uniquely identify the container within the pod.
@@ -623,9 +623,9 @@ This section deals with port configuration for the container. It first checks wh
           {{- end }}
 ```
 
- - ports: containerPort is internal port use by application.
+ - **ports** : containerPort is internal port use by application.
 
- - name: As the port name it was defined with this concatenation of `port-{{ . }}`,
+ - **name** : As the port name it was defined with this concatenation of `port-{{ . }}`,
   {{ . }}: This refers to the port number
 
 ---
@@ -772,14 +772,14 @@ spec:
   {{- end }}
 ```
 
--   **selector:** The selector is set based on the service labels. If no label is set, it defaults to `app: {{ $key }}`
+-   **selector :** The selector is set based on the service labels. If no label is set, it defaults to `app: {{ $key }}`
 
 ```YAML
 ...
   type: {{ $value.type | default $.Values.global.service.type }}
 {{- end }}
 ```
--   **type:** The service type is defined using the values ​​specified in Values.yaml. If not defined, it uses the global service type defined in Values.yaml.
+-   **type :** The service type is defined using the values ​​specified in Values.yaml. If not defined, it uses the global service type defined in Values.yaml.
 
 ```YAML
 ...
@@ -792,10 +792,10 @@ spec:
       protocol: {{$port.protocol | default $.Values.global.service.protocol }}
 {{- end }}
 ```
-- **name:** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
-- **ports:** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for call the service by this port.
-- **targetPort:** Is the port internal use by your application which you want to point to.
-- **protocol:** 
+- **name :** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
+- **ports :** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for call the service by this port.
+- **targetPort :** Is the port internal use by your application which you want to point to.
+- **protocol :**
     supports the following protocols with Services:
     - SCTP
     - TCP (the default)
@@ -861,7 +861,7 @@ Persistent Volume Claim Definition:
 
 For each iteration, this block generates a PersistentVolumeClaim object with a name based on the current key. The namespace is determined by the value specified in the chart, or it defaults to the global namespace if not provided.
 
-Spec Section:
+Specification Section:
 
 ```YAML
           spec:

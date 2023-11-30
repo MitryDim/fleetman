@@ -6,13 +6,44 @@
 ![Result](https://github.com/MitryDim/fleetman/assets/80764455/10f1214c-532e-4448-9ecb-f5ffb1f14cc2)
 
 ## Summary
-* [Project description](https://github.com/MitryDim/fleetman/blob/main/README.md#project-description)
-* [Objective of the projet](https://github.com/MitryDim/fleetman/blob/main/README.md#Objective-of-the-projet)
-	* [Elements at our disposal](https://github.com/MitryDim/fleetman/blob/main/README.md#Elements-at-our-disposal)
-* [Installation and Launching Fleetman with Helm](https://github.com/MitryDim/fleetman/tree/main#installation-and-launching-fleetman-with-helm)
-	* [Prerequisites](https://github.com/MitryDim/fleetman/tree/main#prerequisites)
-	* [Clone the Project](https://github.com/MitryDim/fleetman/tree/main#Clone-the-Project)
+
+1. [Fleetman Project](#fleetman)
+   - [Project Description](#project-description)
+   - [Project Objective](#objective-of-the-project)
+2. [Installation and Launching Fleetman with Helm](#installation-and-launching-fleetman-with-helm)
+   - [Prerequisites](#prerequisites)
+   - [Project Cloning](#clone-the-project)
+   - [Configuration](#configuration)
+   - [Installation with Helm](#installation-with-helm)
+   - [Installation Verification](#verification-of-installation)
+   - [Verification of Deployed Services](#verify-that-the-services-are-deployed)
+   - [Accessing Services](#accessing-services)
+   - [Uninstallation with Helm](#uninstallation-with-helm)
+3. [Project Structure](#project-structure)
+   - [Chart Templates](#charts-templates)
+4. [Values.yaml Configuration](#valuesyaml-configuration)
+   - [Global Values](#configuration-of-the-global-values)
+   - [Deployment Configuration](#deployment)
+   - [Services](#services)
+   - [Persistent Volumes](#persistent-volumes)
+5. [Deployment template Configuration](#deployment-template-configuration)
+   - [Containers Informations](#containers-informations)
+   - [Resources Managements](#resources-managements)
+   - [Secrets](#secrets)
+   - [Spring Environment Variables](#spring-environment-variables)
+   - [Ports](#ports)
+   - [Probes Sections](#probes-section)
+      - [Liveness Probe](#liveness-probe)
+      - [Readiness Probe](#readiness-probe)
+   - [Volumes Sections](#volumes-section)
+      - [Volumes Mounts](#volumes-mounts)
+      - [Volumes](#volumes)
+6. [Service template Configuration](#service-template-configuration)
+   - [Service Specification](#service-specification)
+7. [Namespace Volumes Configuration](#namespace-template-configuration)
+8. [Persistent Volumes Configuration](#persistent-volume-configuration)
 ---
+
 ## Project description
 The project is a web application that allows real-time tracking of a fleet of vehicles performing deliveries.
 
@@ -73,7 +104,7 @@ Replace "your-release-name" with the desired name for your deployment.
 Check that the pods are running:
 `kubectl get pods`
 
-### Verify that the services are deployed:
+### Verify that the services are deployed
 
 `kubectl get services`
 
@@ -188,8 +219,8 @@ The default configuration of the service is in the global section and then in th
 global:
   ...
   service:
-    type: ClusterIP  
-    protocol: TCP 
+    type: ClusterIP
+    protocol: TCP
     livenessProbe:
      ...
     readinessProbe:
@@ -200,7 +231,7 @@ global:
    -   Protocol: `TCP` (Default)
 
   Defines the default configuration for Kubernetes services.
- The service type[^1] is set to `ClusterIP` by default, but alternatives include `LoadBalancer`. 
+ The service type[^1] is set to `ClusterIP` by default, but alternatives include `LoadBalancer`.
  The protocol[^2] is set to `TCP`, and liveness and readiness [^3] probes are configured to monitor the health of the application.
 
 >[!Caution]
@@ -325,7 +356,7 @@ You can change the probe values relative to the global value but the port is req
 ...
       probe:
         type: "tcpSocket"
-        port: 27017 
+        port: 27017
 ```
 
 **Spring profile**
@@ -337,7 +368,7 @@ For modify the value of spring profile compared with global value you can procee
 
 **ContainerPort**
 If you want you can set the internal port number use in internal by your application in container section. exemple :
-```YAML	
+```YAML
 ...
       containerPort: 27017
 ```
@@ -597,7 +628,7 @@ The readinessProbe sub-section determines whether the container is ready to rece
 
 The volumes section manages the configuration of volumes and mounts for each deployment.
 
-#### Volume Mounts
+#### Volumes Mounts
 
 The volumeMounts specify the mounting points for the volumes in the container.
 
@@ -666,7 +697,7 @@ metadata:
 -   **namespace:** namespace is taken from the service values ​​in Values.yaml. If not defined, it uses the global namespace defined in Values.yaml.
 -   **labels:** Labels are set using the values ​​specified in Values.yaml. If no label is set, it defaults to  `app: {{  $key  }}`` .
 
-**Service Specification**
+### Service Specification
 
 The Service spec section is defined with the selector, service type, and ports.
 

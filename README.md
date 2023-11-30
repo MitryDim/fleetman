@@ -789,17 +789,13 @@ spec:
     - name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
       port: {{ $firstValuePort | default $port | int }}
       targetPort: {{  splitList ":" $port | last | default $port | int  }}
-      protocol: {{$port.protocol | default $.Values.global.service.protocol }}
+      protocol: {{ $.Values.global.service.protocol }}
 {{- end }}
 ```
 - **name :** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
 - **ports :** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for call the service by this port.
 - **targetPort :** Is the port internal use by your application which you want to point to.
-- **protocol :**
-    supports the following protocols with Services:
-    - SCTP
-    - TCP (the default)
-    - UDP
+- **protocol :** Use the default value of `$.Values.global.service.protocol` i.e `TCP`
 
 > [!Note]
 > Each generated Service object is separated by `---` in the final YAML file.
@@ -823,7 +819,7 @@ Condition for Non-Default Namespace:
 
 This line uses the `ne` (not equal) function to check if the value of `$.Values.global.namespace` is not equal to "default". If the condition is true, the following block is included in the final rendering.
 
-Namespace Declaration:
+Namespace Declaration :
 
 ```YAML
           apiVersion: v1
@@ -841,7 +837,7 @@ If the condition is true, this part of the code generates a Namespace object wit
 ## Persistent volume configuration
 
 
-Loop Over Persistent Volume Claims:
+Loop Over Persistent Volume Claims :
 
 ```YAML
           {{- range $key, $value := .Values.persistentVolumesClaim }}
@@ -849,7 +845,7 @@ Loop Over Persistent Volume Claims:
 
 This line initiates a loop that iterates over each key-value pair in the persistentVolumesClaim section of the Helm chart values.
 
-Persistent Volume Claim Definition:
+Persistent Volume Claim Definition :
 
 ```YAML
           apiVersion: v1
@@ -861,7 +857,7 @@ Persistent Volume Claim Definition:
 
 For each iteration, this block generates a PersistentVolumeClaim object with a name based on the current key. The namespace is determined by the value specified in the chart, or it defaults to the global namespace if not provided.
 
-Specification Section:
+Specification Section :
 
 ```YAML
           spec:

@@ -54,7 +54,7 @@ deployments:
         initialDelaySeconds: 30
       readinessProbe: true
       livenessProbe: true
-      ports: 
+      ports:
         - 27017
   queue:
     containers:
@@ -67,7 +67,7 @@ deployments:
         port: 61616
       livenessProbe: true
       readinessProbe: true
-      ports: 
+      ports:
         - 61616
         - 8161
 
@@ -133,8 +133,8 @@ services:
     ports:
       - "27017"
   queue:
-    ports: 
-      - "8161" 
+    ports:
+      - "8161"
       - "61616"
   position-tracker:
     ports:

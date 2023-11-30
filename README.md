@@ -65,6 +65,9 @@ In the **fleetman** directory, run the Helm command to install the Fleetman proj
 `helm install your-release-name .`
 Replace "your-release-name" with the desired name for your deployment.
 
+>[!Note]
+> Wait a few moments before deploying all pods. The probes are seting up.
+
 ### Verification of Installation
 
 Check that the pods are running:
@@ -76,7 +79,7 @@ Check that the pods are running:
 
 ### Accessing Services
 
-You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1:30080.
+You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1 or http://localhost .
 
 ### Uninstallation with Helm
 If needed, you can uninstall Fleetman using the Helm command:
@@ -99,6 +102,9 @@ If needed, you can uninstall Fleetman using the Helm command:
 
 **deployments.yaml**
 The deployments.yaml file defines Kubernetes deployments generated from the values defined in values.yaml.
+
+**namespace.yaml**
+The namespace.yaml file defines Kubernetes namespaces generated from the values defined in values.yaml.
 
 **service.yaml**
 The service.yaml file defines Kubernetes services generated from the values defined in values.yaml.
@@ -335,12 +341,11 @@ If in the deployment value you use a persistentVolume you need to add this confi
 ```YAML
 persistentVolumesClaim:
   mongodb-pv-claim:
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 8Gi
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 3Gi
 ```
 - ***nameofdeployment***-pv-claim : Name of persistantVolume, you need set the same name of deployment
 - accessModes:
@@ -752,9 +757,15 @@ For each iteration, this block generates a PersistentVolumeClaim object with a n
 Spec Section:
 
 ```YAML
-          {{- with $value.spec }}
           spec:
-          {{- toYaml . | nindent 2 }}
+            {{- with $value.accessModes }}
+            accessModes:
+              {{- toYaml . | nindent 4 }}
+            {{- end }}
+            {{- with $value.resources }}
+            resources:
+              {{- toYaml . | nindent 4 }}
+            {{- end }}
           {{- end -}}
 ```
 

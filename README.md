@@ -23,9 +23,9 @@
    - [Chart Templates](#charts-templates)
 4. [Values.yaml Configuration](#valuesyaml-configuration)
    - [Global Values](#configuration-of-the-global-values)
-   - [Deployment Configuration](#deployment)
-   - [Services](#services)
-   - [Persistent Volumes](#persistent-volumes)
+   - [Deployments Configuration](#deployments-configuration)
+   - [Services Configuration](#services-configuration)
+   - [Persistent Volumes Configuration](#persistent-volumes-configuration)
 5. [Deployment template Configuration](#deployment-template-configuration)
    - [Containers Informations](#containers-informations)
    - [Resources Managements](#resources-managements)
@@ -270,7 +270,7 @@ These settings define how Kubernetes monitors the health of a container. The liv
 [^3]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
 
-### Configuration of deployments values
+### Deployments Configuration
  In the `values.yaml` file the deployment start with this section :
 
 ```YAML
@@ -373,7 +373,7 @@ If you want you can set the internal port number use in internal by your applica
       containerPort: 27017
 ```
 
-### Configuration of services values
+### Services Configuration
  In the `values.yaml` file the service configuration start with this section :
 ```YAML
 services:
@@ -399,7 +399,7 @@ services:
 >[!Note]
 > type and protocol was define in global section if it's the same value don't need to add in your configuration
 
-### Persistent Volumes
+### Persistent Volumes Configuration
 If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple :
 ```YAML
 persistentVolumesClaim:

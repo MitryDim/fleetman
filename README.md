@@ -367,7 +367,6 @@ persistentVolumesClaim:
 
 ## Deployment template Configuration
 
-
 This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
 
 ```YAML
@@ -393,7 +392,9 @@ Deployment Metadata:
             name: {{ $key }}
 ```
 
-These metadata include the deployment's namespace, which is either specified in the values ($value.namespace) or defaults to the global value ($.Values.global.namespace). The deployment name ($key) is based on the element's key in the array.
+These metadata include the deployment's namespace, which is either specified in the values `$value.namespace` or defaults to the global value `$.Values.global.namespace`. The deployment name `$key` is based on the element's key in the array.
+
+
 
 Deployment Labels:
 
@@ -430,10 +431,10 @@ Deployment Specification (Spec):
               spec:
 ```
 
-The deployment specification includes the number of replicas (replicas)
+The **replicas** field specifies the desired number of replicas (instances) of the application that should be running in the Kubernetes cluster. The ability to easily scale the number of replicas up or down is one of the key benefits of using Kubernetes deployments. We can scale our application based on demand, ensuring that it can handle varying levels of traffic.
 
 
-Containers Informations
+## Containers Informations
 
 **containers** is where detailed information about the pods containers is specified. Each container within a pod is defined by the following block and sections
 
@@ -469,12 +470,12 @@ The next section deals with configuring resources (CPU and memory) for container
 This section checks whether specific resources have been defined for the container. If so, they are added to the resources section. If not, the default values specified in the global parameters are used.
 
   - request:
-      - memory: The amount of memory the container requests.
-      - cpu: The amount of processing power (CPU) the container requests.
+      - memory : The amount of memory the container requests.
+      - cpu : The amount of processing power (CPU) the container requests.
 
   - limits:
-    - memory: The maximum amount of memory the container can use.
-    - cpu: The maximum amount of processing power (CPU) the container can use.
+    - memory : The maximum amount of memory the container can use.
+    - cpu : The maximum amount of processing power (CPU) the container can use.
 
 #### Secrets
 

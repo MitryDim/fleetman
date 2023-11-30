@@ -1,7 +1,5 @@
 
-**Author :  [Dimitry.C](https://github.com/MitryDim) - [Valentin.L](https://github.com/Valt1-0)**
-
-
+**Author :  [Dimitry.C](https://github.com/MitryDim){:target="_blank"} - [Valentin.L](https://github.com/Valt1-0){:target="_blank"}**
 
 # Fleetman 🚚
 ---

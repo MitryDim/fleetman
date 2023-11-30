@@ -516,10 +516,16 @@ This section deals with port configuration for the container. It first checks wh
           {{- end }}
 ```
 
----
-## Section des Probes
+ - ports: containerPort is specified by iterating over the ports defined for the service in Values.yaml. The first port is used for the default port i.e. the internal port and if the service type is NodePort, the nodePort is also specified.
 
-La section des sondes gère les sondes de disponibilité (livenessProbe et readinessProbe) pour chaque conteneur du déploiement.
+ - name: As the port name it was defined with this concatenation of `{{ $key }}-{{ . }}`,
+  {{ $key }}: This is a variable that holds a value, obtained from iterating over the range.
+  {{ . }}: This refers to the current item in the range.
+
+---
+## Probes section
+
+The probes section manages the availability probes (livenessProbe and readinessProbe) for each container in the deployment.
 
 
 #### Liveness Probe

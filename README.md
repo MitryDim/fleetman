@@ -15,7 +15,7 @@
    - [Project Cloning](#clone-the-project)
    - [Configuration](#configuration)
    - [Installation with Helm](#installation-with-helm)
-   - [Installation Verification](#verification-of-installation)
+   - [Verification of Installation](#verification-of-installation)
    - [Verification of Deployed Services](#verify-that-the-services-are-deployed)
    - [Accessing Services](#accessing-services)
    - [Uninstallation with Helm](#uninstallation-with-helm)
@@ -728,7 +728,7 @@ spec:
    {{- $firstValuePort := splitList ":" $port| first | int }}
     - name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
       port: {{ $firstValuePort | default $port | int }}
-      targetPort: {{  splitList ":" $port | last | default $port | int  }} 
+      targetPort: {{  splitList ":" $port | last | default $port | int  }}
       protocol: {{$port.protocol | default $.Values.global.service.protocol }}
 {{- end }}
 ```

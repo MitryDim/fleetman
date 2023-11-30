@@ -21,13 +21,13 @@ global:
   livenessProbe:
     type: "httpGet"
     path: /
-    initialDelaySeconds: 30
-    periodSeconds: 10
+    initialDelaySeconds: 130
+    periodSeconds: 60
   readinessProbe:
     type: "httpGet"
     path: /
-    initialDelaySeconds: 30
-    periodSeconds: 10
+    initialDelaySeconds: 150
+    periodSeconds: 60
 
 #Value ENV for spring profile
 spring:
@@ -51,16 +51,25 @@ deployments:
       probe:
         type: "tcpSocket"
         port: 27017
+        initialDelaySeconds: 30
       readinessProbe: true
       livenessProbe: true
+      ports: 
+        - 27017
   queue:
     containers:
       image:
         repository: supinfo4kube/queue
         tag: "1.0.1"
+      spring: prod
       probe:
-        port: 8161
+        type: "tcpSocket"
+        port: 61616
       livenessProbe: true
+      readinessProbe: true
+      ports: 
+        - 61616
+        - 8161
 
   position-simulator:
     containers:
@@ -82,6 +91,11 @@ deployments:
           memory: "1Gi"
           cpu: "1000m"
       spring: prod
+      probe:
+        type: "tcpSocket"
+        port: 8080
+      livenessProbe: true
+      readinessProbe: true
 
   api-gateway:
     containers:
@@ -96,6 +110,11 @@ deployments:
           memory: "768Mi"
           cpu: "750m"
       spring: prod
+      probe:
+        type: "tcpSocket"
+        port: 8080
+      livenessProbe: true
+      readinessProbe: true
 
   webapp:
     containers:
@@ -106,6 +125,7 @@ deployments:
       probe:
         port: 80
       livenessProbe: true
+      readinessProbe: true
 
 #Values for service
 services:
@@ -113,9 +133,8 @@ services:
     ports:
       - "27017"
   queue:
-    type: NodePort
-    ports: # if you have two ports target and port the first value is localPort and other is port to
-      - "8161:30010" #30010 is NodePort
+    ports: 
+      - "8161" 
       - "61616"
   position-tracker:
     ports:
@@ -124,9 +143,9 @@ services:
     ports:
       - "8080"
   webapp:
-    type: NodePort
+    type: "LoadBalancer"
     ports:
-      - "80:30080"
+      - "80"
 
 #Value for persistentVolumes
 persistentVolumesClaim:

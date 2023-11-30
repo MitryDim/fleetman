@@ -886,7 +886,7 @@ If the spec key is defined within the current persistent volume claim, it is inc
 
 
 >[!Warning]
->pay attention to the indentation in the template files.
+> Pay attention to the indentation in the template files.
 
 > [!CAUTION]
 > If you modify a value and is not correct, this can create an error ! Please make sure if you modify.

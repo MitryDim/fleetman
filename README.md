@@ -138,8 +138,6 @@ The default configuration for deployment is directly in global section :
   image:
     tag: "latest"
     pullPolicy: IfNotPresent
-  ports:
-    - 80
 ```
 >[!Warning]
 >Default value for namespace /!\ don't touch for this moment because the application have one bug if is not in default namespace.
@@ -148,8 +146,6 @@ The default configuration for deployment is directly in global section :
 -   **Spring Profile**: Controls the Spring profile used for the application. The value is dependent on the environment (ENV) variable for the Spring profile. Options include `local` for local development and `prod` for production development.
 
 -   **Image Configuration:** Defines the default tag and pull policy are specified, providing a starting point for the deployment.
-
--   **Ports Configuration:** Specifies the internal ports used by the application. If an internal and external port need to differ, a mapping can be defined (e.g., `InternalPort:ExternalPort`). For example, if the type is NodePort, the externally accessible port would be `36500`, pointing to the internal port `80`.
 
 Default Memory and CPU usage if their not given by the user, based on Computer Capacity
 
@@ -186,8 +182,8 @@ The default configuration of the service is in the global section and then in th
 global:
   ...
   service:
-    type: ClusterIP  #Default value is ClusterIp the possible type in this project was NodePort and ClusterIp or LoadBalancer
-    protocol: TCP #Default protocol is TCP Docs : )
+    type: ClusterIP  
+    protocol: TCP 
     livenessProbe:
      ...
     readinessProbe:
@@ -198,25 +194,28 @@ global:
    -   Protocol: `TCP` (Default)
 
   Defines the default configuration for Kubernetes services.
- The service type[^1] is set to `ClusterIP` by default, but alternatives include `NodePort` and `LoadBalancer`.
+ The service type[^1] is set to `ClusterIP` by default, but alternatives include `LoadBalancer`. 
  The protocol[^2] is set to `TCP`, and liveness and readiness [^3] probes are configured to monitor the health of the application.
+
+>[!Caution]
+>For a scalability problem do not use NodePort
 
 ```YAML
     ...
     livenessProbe:
-      type: "httpGet"
+      type: "tcpSocket"
       path: /
-      initialDelaySeconds: 30
+      initialDelaySeconds: 130
       periodSeconds: 10
     readinessProbe:
-      type: "httpGet"
+      type: "tcpSocket"
       path: /
-      initialDelaySeconds: 30
+      initialDelaySeconds: 130
       periodSeconds: 10
 ```
 **Liveness Probe & Readiness Probe :**
--   **Type:** Specifies the type of probe, and in this case, it's set to "httpGet," meaning Kubernetes will perform an HTTP GET request. You can view different type in [documentation]
--   **Path:** Specifies the endpoint or path on the container where the probe should send the HTTP GET request. In this case, it's set to "/" indicating the root path.
+-   **Type:** Specifies the type of probe, and in this case, it's set to "tcpSocket," meaning Kubernetes will perform an HTTP GET request. You can view different type in [documentation]
+-   **Path:** Specifies the endpoint or path on the container where the probe should send the tcpSocket request. In this case, it's set to "/" indicating the root path. 
 -   **Initial Delay Seconds:** Specifies the number of seconds after the container has started before the liveness probe is initiated. In this example, it's set to 30 seconds.
 -   **Period Seconds:** Specifies the frequency, in seconds, at which the liveness probe should be performed. Here, it's set to 10 seconds.
 
@@ -275,7 +274,7 @@ We will see the values ​​that you can add or modify in relation to the value
         tag: "3.6.23"
 ```
 - the repository as a image of [docker hub](https://hub.docker.com/)
-- tag as version of image
+- tag as version of image (optional) by default use 'latest' of global value tag but is not recommended
 
 **resources section**
 ```YAML
@@ -315,21 +314,32 @@ If you want add readinessProbe or livenessProbe you can add these values :
       readinessProbe: true
       livenessProbe: true
 ```
-For modify the value of Probe compared with global value you can proceed like this for exemple :
+You can change the probe values relative to the global value but the port is required you can do it like this for example:
 ```YAML
 ...
       probe:
         type: "tcpSocket"
-        port: 27017
+        port: 27017 
 ```
+
 **Spring profile**
 For modify the value of spring profile compared with global value you can proceed like this for exemple :
 ```YAML
 ...
       spring: prod
 ```
+
+**ContainerPort**
+If you want you can set the internal port number use in internal by your application in container section. exemple :
+```YAML	
+...
+      containerPort: 27017
+```
+
 ### Services
 Define service in values.yaml
+
+
 ### Persistent Volumes
 If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple :
 ```YAML
@@ -340,7 +350,7 @@ persistentVolumesClaim:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 8Gi
+          storage: 3Gi
 ```
 - ***nameofdeployment***-pv-claim : Name of persistantVolume, you need set the same name of deployment
 - accessModes:
@@ -482,6 +492,7 @@ This section checks whether specific resources have been defined for the contain
 This part checks whether secrets are specified for the container. If so, they are injected into the container using the **envFrom** directive. This allows the container to access the secret values.
 
 ```YAML
+...
           {{- with $value.containers.secret }}
           envFrom:
             - secretRef:
@@ -494,6 +505,7 @@ This part checks whether secrets are specified for the container. If so, they ar
 If the configuration specifies Spring environment variables for the container, they are added to the env section. This can be useful for Spring application-specific configuration.
 
 ```YAML
+...
           {{- if $value.containers.spring }}
           {{- $springValue := index $.Values.spring $value.containers.spring }}
           env:
@@ -504,22 +516,26 @@ If the configuration specifies Spring environment variables for the container, t
 
 #### Ports
 
-This section deals with port configuration for the container. It first checks whether ports are specified for this container. If so, they are added to the ports section. Each port is assigned a unique name based on the deployment key and port number.
+This section deals with port configuration for the container. It first checks whether containerPort are specified for this container. If so, they are added to the ports section. Port name is assigned a unique name.
 
 ```YAML
-          {{- if $value.containers.ports }}
+...
+          {{- if $value.containers.containerPort }}
           ports:
-            {{- range $value.containers.ports | default $.Values.global.ports }}
-            - containerPort: {{ . }}
-              name: {{ $key }}-{{ . }}
-            {{- end }}
+            - containerPort: {{ $value.containers.containerPort }}
+              name: port-{{ $value.containers.ports }}
           {{- end }}
 ```
 
----
-## Section des Probes
+ - ports: containerPort is internal port use by application.
 
-La section des sondes gère les sondes de disponibilité (livenessProbe et readinessProbe) pour chaque conteneur du déploiement.
+ - name: As the port name it was defined with this concatenation of `port-{{ . }}`,
+  {{ . }}: This refers to the port number
+
+---
+## Probes section
+
+The probes section manages the availability probes (livenessProbe and readinessProbe) for each container in the deployment.
 
 
 #### Liveness Probe
@@ -672,16 +688,22 @@ spec:
 ```YAML
 ...
   ports:
-   {{- range $index, $port := $value.ports }}
+   {{- range $index,$port := $value.ports }}
    {{- $firstValuePort := splitList ":" $port| first | int }}
-    - port: {{ $firstValuePort | default $port | int }}
-    {{- if and (eq $value.type "NodePort") (eq $index 0) }}
-      nodePort: {{ splitList ":" $port| last | int | default $port | int }}
-    {{- end }}
-      name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
+    - name: s-{{ $key }}-{{ $firstValuePort | default $port | int }}
+      port: {{ $firstValuePort | default $port | int }}
+      targetPort: {{  splitList ":" $port | last | default $port | int  }} 
+      protocol: {{$port.protocol | default $.Values.global.service.protocol }}
+{{- end }}
 ```
--   **ports:** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for the default port i.e. the internal port and if the service type is NodePort, the nodePort is also specified.
 - **name:** As the port name it was defined with this concatenation of "s-`{{ $key }}`-internalPort"
+- **ports:** Ports are specified by iterating over the ports defined for the service in Values.yaml. The first port is used for call the service by this port.
+- **targetPort:** Is the port internal use by your application which you want to point to.
+- **protocol:** 
+    supports the following protocols with Services:
+    - SCTP
+    - TCP (the default)
+    - UDP
 
 > [!Note]
 > Each generated Service object is separated by `---` in the final YAML file.

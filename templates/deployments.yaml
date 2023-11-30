@@ -54,12 +54,10 @@ spec:
             - name: {{ $value.name }}
               value: {{ $value.value }}
           {{- end }}
-          {{- if $value.containers.ports}}
+          {{- if $value.containers.containerPort }}
           ports:
-            {{- range $value.containers.ports | default $.Values.global.ports }}
-            - containerPort: {{ . }}
-              name: port-{{ . }}
-            {{- end }}
+            - containerPort: {{ $value.containers.containerPort }}
+              name: port-{{ $value.containers.ports }}
           {{- end }}
           {{- if $value.containers.livenessProbe }}
           {{- with $value.containers.probe }}

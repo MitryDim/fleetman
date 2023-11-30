@@ -13,21 +13,19 @@ global:
     limits:
       memory: "512Mi"
       cpu: "500m"
-  ports:
-    - 80
   service:
     type: ClusterIP
     protocol: TCP
   livenessProbe:
-    type: "httpGet"
+    type: "tcpSocket"
     path: /
     initialDelaySeconds: 130
-    periodSeconds: 60
+    periodSeconds: 30
   readinessProbe:
-    type: "httpGet"
+    type: "tcpSocket"
     path: /
     initialDelaySeconds: 150
-    periodSeconds: 60
+    periodSeconds: 30
 
 #Value ENV for spring profile
 spring:
@@ -49,13 +47,10 @@ deployments:
         - path: /data/db
           persistentVolumeClaim: true
       probe:
-        type: "tcpSocket"
         port: 27017
         initialDelaySeconds: 30
       readinessProbe: true
       livenessProbe: true
-      ports: 
-        - 27017
   queue:
     containers:
       image:
@@ -63,13 +58,9 @@ deployments:
         tag: "1.0.1"
       spring: prod
       probe:
-        type: "tcpSocket"
         port: 61616
       livenessProbe: true
       readinessProbe: true
-      ports: 
-        - 61616
-        - 8161
 
   position-simulator:
     containers:
@@ -92,7 +83,6 @@ deployments:
           cpu: "1000m"
       spring: prod
       probe:
-        type: "tcpSocket"
         port: 8080
       livenessProbe: true
       readinessProbe: true
@@ -111,7 +101,6 @@ deployments:
           cpu: "750m"
       spring: prod
       probe:
-        type: "tcpSocket"
         port: 8080
       livenessProbe: true
       readinessProbe: true
@@ -123,6 +112,7 @@ deployments:
         tag: "1.0.0"
       spring: prod
       probe:
+        type: "httpGet"
         port: 80
       livenessProbe: true
       readinessProbe: true

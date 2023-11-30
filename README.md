@@ -21,12 +21,13 @@
    - [Uninstallation with Helm](#uninstallation-with-helm)
 3. [Project Structure](#project-structure)
    - [Chart Templates](#charts-templates)
-4. [Values.yaml Configuration](#valuesyaml-configuration)
+4. [Chart.yaml Configuration](#chartyaml-configuration)
+5. [Values.yaml Configuration](#valuesyaml-configuration)
    - [Global Values](#configuration-of-the-global-values)
    - [Deployment Configuration](#deployment)
    - [Services](#services)
    - [Persistent Volumes](#persistent-volumes)
-5. [Deployment template Configuration](#deployment-template-configuration)
+6. [Deployment template Configuration](#deployment-template-configuration)
    - [Containers Informations](#containers-informations)
    - [Resources Managements](#resources-managements)
    - [Secrets](#secrets)
@@ -38,10 +39,10 @@
    - [Volumes Sections](#volumes-section)
       - [Volumes Mounts](#volumes-mounts)
       - [Volumes](#volumes)
-6. [Service template Configuration](#service-template-configuration)
+7. [Service template Configuration](#service-template-configuration)
    - [Service Specification](#service-specification)
-7. [Namespace Volumes Configuration](#namespace-template-configuration)
-8. [Persistent Volumes Configuration](#persistent-volume-configuration)
+8. [Namespace template Configuration](#namespace-template-configuration)
+9. [Persistent Volumes Configuration](#persistent-volume-configuration)
 ---
 
 ## Project description
@@ -71,8 +72,6 @@ https://helm.sh/docs/intro/install/
 
 
 ### Clone the Project
-
-⚠️**NE PAS OUBLIER DE METTRE LE GIT EN PUBLIC**⚠️
 
 Clone the Fleetman project from your Git repository:
 git clone
@@ -143,6 +142,45 @@ The service.yaml file defines Kubernetes services generated from the values defi
 **persistentvolumes.yaml**
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.
 
+## [Chart.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/Chart.yaml) Configuration
+
+A Helm Chart YAML file, such as the `Chart.yaml` you provided, serves as a fundamental descriptor for Helm charts package manager for Kubernetes applications. Here's an overview of its key components:
+
+```YAML
+  apiVersion: v2
+```
+
+This specifies the version of the Helm API in use (e.g., v2) and indicates API version compatibility for Helm.
+
+```YAML
+  name: vehiculefleet
+```
+
+This defines the unique identifier for the Helm chart.
+
+```YAML
+  description: A Helm chart for fleetMan
+```
+
+This offers a brief description of the Helm chart, outlining its purpose or functionality.
+
+```YAML
+  type: application
+```
+
+This distinguishes between an 'application' or a 'library' chart, specifying whether the chart includes deployable templates or utility functions.
+
+```YAML
+  version: 0.1.0
+```
+
+This denotes the chart version for tracking changes.
+
+```YAML
+  appVersion: "1.16.0"
+```
+
+This represents the version of the application being deployed and should be incremented when changes are made to the application, not following Semantic Versioning.
 
 ## [Values.yaml](https://github.com/MitryDim/fleetman/blob/0d9d06d3faf1937a099e7764026419c7f543ce28/values.yaml) Configuration
 
@@ -693,9 +731,9 @@ metadata:
   {{- end }}
 ```
 -  Each deployment is defined as a Kubernetes object of type "Service" v1.
--   **name:**The service name is defined as "fleetman-`{{  $key  }}`"
--   **namespace:** namespace is taken from the service values ​​in Values.yaml. If not defined, it uses the global namespace defined in Values.yaml.
--   **labels:** Labels are set using the values ​​specified in Values.yaml. If no label is set, it defaults to  `app: {{  $key  }}`` .
+-   **name :** The service name is defined as "fleetman-`{{  $key  }}`"
+-   **namespace :** namespace is taken from the service values ​​in Values.yaml. If not defined, it uses the global namespace defined in Values.yaml.
+-   **labels :** Labels are set using the values ​​specified in Values.yaml. If no label is set, it defaults to  `app: {{  $key  }}`` .
 
 ### Service Specification
 

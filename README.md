@@ -91,7 +91,7 @@ Ensure Docker images and probe configurations (liveness and readiness) are corre
 
 ### Generate Manifest
 
-Generate the manifest file with `helm template > manifest.yaml`
+Generate the manifest file with `helm template . > manifest.yaml`
 The manifest describes the resources and configuration needed to deploy and manage the application, the manifest.yaml file is generated from Helm templates.
 
 >[!Note]

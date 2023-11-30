@@ -65,6 +65,9 @@ In the **fleetman** directory, run the Helm command to install the Fleetman proj
 `helm install your-release-name .`
 Replace "your-release-name" with the desired name for your deployment.
 
+>[!Note]
+> Wait a few moments before deploying all pods. The probes are seting up.
+
 ### Verification of Installation
 
 Check that the pods are running:
@@ -76,7 +79,7 @@ Check that the pods are running:
 
 ### Accessing Services
 
-You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1:30080.
+You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1 or http://localhost .
 
 ### Uninstallation with Helm
 If needed, you can uninstall Fleetman using the Helm command:
@@ -99,6 +102,9 @@ If needed, you can uninstall Fleetman using the Helm command:
 
 **deployments.yaml**
 The deployments.yaml file defines Kubernetes deployments generated from the values defined in values.yaml.
+
+**namespace.yaml**
+The namespace.yaml file defines Kubernetes namespaces generated from the values defined in values.yaml.
 
 **service.yaml**
 The service.yaml file defines Kubernetes services generated from the values defined in values.yaml.
@@ -345,12 +351,11 @@ If in the deployment value you use a persistentVolume you need to add this confi
 ```YAML
 persistentVolumesClaim:
   mongodb-pv-claim:
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 3Gi
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 3Gi
 ```
 - ***nameofdeployment***-pv-claim : Name of persistantVolume, you need set the same name of deployment
 - accessModes:
@@ -375,7 +380,7 @@ persistentVolumesClaim:
 
 ---
 
-## Deployment template Configuration
+## Deployment template configuration
 
 This deployments file is a template. This file loops over the values ​​declared in the `values.yaml` file in the deployments section so that it allows you to create the necessary deployments without making several deployment files
 
@@ -715,8 +720,76 @@ spec:
 ```
 The `{{- end}}` close the loop
 
+---
+
+## Namespace template configuration
+
+Condition for Non-Default Namespace:
+
+```YAML
+          {{- if ne $.Values.global.namespace "default" }}
+```
+
+This line uses the `ne` (not equal) function to check if the value of `$.Values.global.namespace` is not equal to "default". If the condition is true, the following block is included in the final rendering.
+
+Namespace Declaration:
+
+```YAML
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: {{ $.Values.global.namespace }}
+            labels:
+              name: {{ $.Values.global.namespace }}
+          {{- end -}}
+```
+
+If the condition is true, this part of the code generates a Namespace object with the name and label defined by the value of the global namespace. This creates a new namespace in the Kubernetes cluster.
+
+
+## Persistent volume configuration
+
+
+Loop Over Persistent Volume Claims:
+
+```YAML
+          {{- range $key, $value := .Values.persistentVolumesClaim }}
+```
+
+This line initiates a loop that iterates over each key-value pair in the persistentVolumesClaim section of the Helm chart values.
+
+Persistent Volume Claim Definition:
+
+```YAML
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: {{ $key }}
+            namespace: {{ $value.namespace | default $.Values.global.namespace }}
+```
+
+For each iteration, this block generates a PersistentVolumeClaim object with a name based on the current key. The namespace is determined by the value specified in the chart, or it defaults to the global namespace if not provided.
+
+Spec Section:
+
+```YAML
+          spec:
+            {{- with $value.accessModes }}
+            accessModes:
+              {{- toYaml . | nindent 4 }}
+            {{- end }}
+            {{- with $value.resources }}
+            resources:
+              {{- toYaml . | nindent 4 }}
+            {{- end }}
+          {{- end -}}
+```
+
+If the spec key is defined within the current persistent volume claim, it is included in the YAML output. The toYaml function is used to convert the spec section to YAML format, and the nindent function is used to apply indentation.
+
+
 >[!Warning]
->pay attention to the indentation in the template file.
+>pay attention to the indentation in the template files.
 
 > [!CAUTION]
 > If you modify a value and is not correct, this can create an error ! Please make sure if you modify.

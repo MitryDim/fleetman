@@ -14,6 +14,7 @@
    - [Prerequisites](#prerequisites)
    - [Project Cloning](#clone-the-project)
    - [Configuration](#configuration)
+   - [Generating Manifest](#generating-manifest)
    - [Installation with Helm](#installation-with-helm)
    - [Verification of Installation](#verification-of-installation)
    - [Verification of Deployed Services](#verify-that-the-services-are-deployed)

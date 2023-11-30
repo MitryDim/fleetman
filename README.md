@@ -24,10 +24,10 @@
 4. [Chart.yaml Configuration](#chartyaml-configuration)
 5. [Values.yaml Configuration](#valuesyaml-configuration)
    - [Global Values](#configuration-of-the-global-values)
-   - [Deployment Configuration](#deployment)
-   - [Services](#services)
-   - [Persistent Volumes](#persistent-volumes)
-6. [Deployment template Configuration](#deployment-template-configuration)
+   - [Deployments Configuration](#deployments-configuration)
+   - [Services Configuration](#services-configuration)
+   - [Persistent Volumes Configuration](#persistent-volumes-configuration)
+5. [Deployment template Configuration](#deployment-template-configuration)
    - [Containers Informations](#containers-informations)
    - [Resources Managements](#resources-managements)
    - [Secrets](#secrets)
@@ -308,7 +308,7 @@ These settings define how Kubernetes monitors the health of a container. The liv
 [^3]: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
 
-### Configuration of deployments values
+### Deployments Configuration
  In the `values.yaml` file the deployment start with this section :
 
 ```YAML
@@ -411,11 +411,33 @@ If you want you can set the internal port number use in internal by your applica
       containerPort: 27017
 ```
 
-### Services
-Define service in values.yaml
+### Services Configuration
+ In the `values.yaml` file the service configuration start with this section :
+```YAML
+services:
+```
+The services value is the value use for the differents services these values are in section services the structure follow this for exemple :
 
+```YAML
+services:
+  webapp:
+    type: "LoadBalancer"
+    ports:
+      - "30080:80"
+  queue:
+    ports:
+      - "8161"
+      - "61616"
+...
+```
+- webapp: It's name of application ( it is necessary that it is the same as the value put in deployment )
+- type[^1] : If you want override the global value you can add this here.
+- ports: Is list of port(s) you want to expose. If the port you want to expose is not the same as that of the application you can do like this: `30080:80` the first port is port of service expose and 80 is the port internal of your application.
+- protocol:  TCP[^2] This is the default value defined in the global values 
+>[!Note]
+> type and protocol was define in global section if it's the same value don't need to add in your configuration
 
-### Persistent Volumes
+### Persistent Volumes Configuration
 If in the deployment value you use a persistentVolume you need to add this configuration in `values.yaml` and in `persistentVolumesClaim` section  for exemple :
 ```YAML
 persistentVolumesClaim:

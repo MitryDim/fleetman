@@ -106,7 +106,7 @@ In the **fleetman** directory, run the Helm command to install the Fleetman proj
 Replace "your-release-name" with the desired name for your deployment.
 
 >[!Note]
-> Wait a few moments before deploying all pods. The probes are seting up.
+> Wait a few moments before deploying all pods. The probes are setting up.
 
 ### Verification of Installation
 

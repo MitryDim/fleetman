@@ -14,7 +14,7 @@
    - [Prerequisites](#prerequisites)
    - [Project Cloning](#clone-the-project)
    - [Configuration](#configuration)
-   - [Generating Manifest](#generating-manifest)
+   - [Generate Manifest](#generate-manifest)
    - [Installation with Helm](#installation-with-helm)
    - [Verification of Installation](#verification-of-installation)
    - [Verification of Deployed Services](#verify-that-the-services-are-deployed)
@@ -89,13 +89,13 @@ The values.yaml file contains default values for Fleetman deployments.
 Modify the values according to your needs, especially those under deployments for each application.
 Ensure Docker images and probe configurations (liveness and readiness) are correct.
 
-### Generating Manifest
+### Generate Manifest
 
 Generate the manifest file with `helm template > manifest.yaml`
 The manifest describes the resources and configuration needed to deploy and manage the application, the manifest.yaml file is generated from Helm templates.
 
 >[!Note]
->(Optional)
+>(Optional) |
 > You don't need to generate the manifest to deploy the project
 
 ### Installation with Helm

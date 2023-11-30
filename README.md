@@ -88,6 +88,14 @@ The values.yaml file contains default values for Fleetman deployments.
 Modify the values according to your needs, especially those under deployments for each application.
 Ensure Docker images and probe configurations (liveness and readiness) are correct.
 
+### Generating Manifest
+
+Generate the manifest file with `helm template > manifest.yaml`
+The manifest describes the resources and configuration needed to deploy and manage the application, the manifest.yaml file is generated from Helm templates.
+
+>[!Note] (Optional)
+> You don't need to generate the manifest to deploy the project
+
 ### Installation with Helm
 
 In the **fleetman** directory, run the Helm command to install the Fleetman project:
@@ -109,7 +117,7 @@ Check that the pods are running:
 
 ### Accessing Services
 
-You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1 or http://localhost .
+You can access the deployed services using IP addresses or service names. For example, for access to webapp service, you can access the application via http://127.0.0.1:30080 or http://localhost:30080 .
 
 ### Uninstallation with Helm
 If needed, you can uninstall Fleetman using the Helm command:
@@ -281,16 +289,16 @@ global:
       type: "tcpSocket"
       path: /
       initialDelaySeconds: 130
-      periodSeconds: 10
+      periodSeconds: 30
     readinessProbe:
       type: "tcpSocket"
       path: /
-      initialDelaySeconds: 130
-      periodSeconds: 10
+      initialDelaySeconds: 150
+      periodSeconds: 30
 ```
 **Liveness Probe & Readiness Probe :**
 -   **Type:** Specifies the type of probe, and in this case, it's set to "tcpSocket," meaning Kubernetes will perform an HTTP GET request. You can view different type in [documentation]
--   **Path:** Specifies the endpoint or path on the container where the probe should send the tcpSocket request. In this case, it's set to "/" indicating the root path. 
+-   **Path:** Specifies the endpoint or path on the container where the probe should send the tcpSocket request. In this case, it's set to "/" indicating the root path.
 -   **Initial Delay Seconds:** Specifies the number of seconds after the container has started before the liveness probe is initiated. In this example, it's set to 30 seconds.
 -   **Period Seconds:** Specifies the frequency, in seconds, at which the liveness probe should be performed. Here, it's set to 10 seconds.
 

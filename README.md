@@ -120,8 +120,8 @@ If needed, you can uninstall Fleetman using the Helm command:
     fleetman/
     | |-- templates/
     |   |-- deployments.yaml
-    |   |-- namespace.yaml
-    |   |-- service.yaml
+    |   |-- namespaces.yaml
+    |   |-- services.yaml
     |   |-- persistentvolumes.yaml
     |-- .helmignore
     |-- Chart.yaml
@@ -133,11 +133,11 @@ If needed, you can uninstall Fleetman using the Helm command:
 **deployments.yaml**
 The deployments.yaml file defines Kubernetes deployments generated from the values defined in values.yaml.
 
-**namespace.yaml**
-The namespace.yaml file defines Kubernetes namespaces generated from the values defined in values.yaml.
+**namespaces.yaml**
+The namespaces.yaml file defines Kubernetes namespaces generated from the values defined in values.yaml.
 
-**service.yaml**
-The service.yaml file defines Kubernetes services generated from the values defined in values.yaml.
+**services.yaml**
+The services.yaml file defines Kubernetes services generated from the values defined in values.yaml.
 
 **persistentvolumes.yaml**
 The persistentvolumes.yaml file defines Kubernetes persistent volume claims generated from the values defined in values.yaml.

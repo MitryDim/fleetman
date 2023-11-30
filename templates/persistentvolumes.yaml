@@ -1,12 +1,16 @@
 {{- range $key, $value := .Values.persistentVolumesClaim }}
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ $key }}
   namespace: {{ $value.namespace | default $.Values.global.namespace }}
-{{- with $value.spec }}
 spec:
-{{- toYaml . | nindent 2 }}
+  {{- with $value.accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $value.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- end -}}
-{{- end }}
